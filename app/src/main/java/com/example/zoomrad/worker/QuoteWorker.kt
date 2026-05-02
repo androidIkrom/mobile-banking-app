@@ -1,0 +1,20 @@
+package com.example.zoomrad.worker
+
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
+import android.os.Build
+import androidx.core.app.NotificationCompat
+import androidx.hilt.work.HiltWorker
+import androidx.work.CoroutineWorker
+import androidx.work.WorkerParameters
+import com.example.entity.Quote
+import com.example.entity.QuoteRepository
+import com.example.zoomrad.MainActivity
+import com.example.zoomrad.R
+import com.example.usecase.GetLastQuoteUseCase
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
+import javax.inject.Inject
