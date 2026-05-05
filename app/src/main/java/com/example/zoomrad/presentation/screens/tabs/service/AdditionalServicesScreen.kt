@@ -1,4 +1,4 @@
-package com.example.zoomrad.presentation.screens
+package com.example.zoomrad.presentation.screens.tabs.service
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -25,9 +25,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.zoomrad.R
 
-/**
- * Data class for the UI elements in the LazyGrid for Additional Services
- */
 data class AdditionalServiceItemData(
     val title: String,
     val iconDescription: String
@@ -52,62 +49,54 @@ fun AdditionalServicesScreen() {
         AdditionalServiceItemData("Face Pay", "Face recognition scan icon"),
         AdditionalServiceItemData("Visa Direct", "Visa logo icon")
     )
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .padding(horizontal = 16.dp)
+    ) {
+        Spacer(modifier = Modifier.height(20.dp))
 
-    Scaffold(
-        bottomBar = { AdditionalServicesBottomNavigationBar() },
-        containerColor = Color(0xFFF7F9F8) // Light grey background
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(horizontal = 16.dp)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Spacer(modifier = Modifier.height(20.dp))
+            Text(
+                text = "Qo'shimcha",
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface
+            )
 
-            // Header Section: Title and Menu Icon
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Qo'shimcha",
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black
-                )
-                
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.List,
-                    contentDescription = "Menu icon",
-                    tint = Color(0xFF00A67E),
-                    modifier = Modifier.size(28.dp)
-                )
-            }
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.List,
+                contentDescription = "Menu icon",
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(28.dp)
+            )
+        }
 
-            Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
-            // Search Bar Component
-            AdditionalServicesSearchBar()
+        AdditionalServicesSearchBar()
 
-            Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
-            // LazyVerticalGrid for services (3 columns as seen in image)
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(3),
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp),
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(bottom = 16.dp)
-            ) {
-                items(services) { service ->
-                    AdditionalServiceGridCard(service)
-                }
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(3),
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(bottom = 16.dp)
+        ) {
+            items(services) { service ->
+                AdditionalServiceGridCard(service)
             }
         }
     }
 }
+
 
 @Composable
 fun AdditionalServicesSearchBar() {
@@ -116,7 +105,7 @@ fun AdditionalServicesSearchBar() {
             .fillMaxWidth()
             .height(54.dp),
         shape = RoundedCornerShape(16.dp),
-        color = Color.White,
+        color = MaterialTheme.colorScheme.surface,
         shadowElevation = 1.dp
     ) {
         Row(
@@ -128,13 +117,13 @@ fun AdditionalServicesSearchBar() {
             Icon(
                 imageVector = Icons.Default.Search,
                 contentDescription = "Search icon",
-                tint = Color(0xFFB2B2B2),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(24.dp)
             )
             Spacer(modifier = Modifier.width(12.dp))
             Text(
                 text = "Xizmat nomi",
-                color = Color(0xFFB2B2B2),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 16.sp
             )
         }
@@ -149,12 +138,10 @@ fun AdditionalServiceGridCard(service: AdditionalServiceItemData) {
             .shadow(
                 elevation = 4.dp,
                 shape = RoundedCornerShape(18.dp),
-                clip = false,
-                ambientColor = Color.Black.copy(alpha = 0.1f),
-                spotColor = Color.Black.copy(alpha = 0.1f)
+                clip = false
             ),
         shape = RoundedCornerShape(18.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Column(
             modifier = Modifier
@@ -163,28 +150,18 @@ fun AdditionalServiceGridCard(service: AdditionalServiceItemData) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Green Gradient Circle for Icon
             Box(
                 modifier = Modifier
                     .size(52.dp)
                     .background(
                         brush = Brush.verticalGradient(
-                            colors = listOf(Color(0xFF2EBD96), Color(0xFF00A67E))
+                            colors = listOf(MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),MaterialTheme.colorScheme.primary)
                         ),
                         shape = CircleShape
                     ),
                 contentAlignment = Alignment.Center
             ) {
-                // ICON PLACEHOLDER: as requested, I'll use a description placeholder
-                /* 
-                   Add actual icons here like:
-                   Icon(
-                       painter = painterResource(id = R.drawable.your_icon),
-                       contentDescription = service.iconDescription,
-                       tint = Color.White,
-                       modifier = Modifier.size(28.dp)
-                   )
-                */
+
                 Text(
                     text = "Icon",
                     color = Color.White,
@@ -194,13 +171,12 @@ fun AdditionalServiceGridCard(service: AdditionalServiceItemData) {
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            // Service Title
             Text(
                 text = service.title,
                 fontSize = 11.sp,
                 lineHeight = 13.sp,
                 fontWeight = FontWeight.Medium,
-                color = Color.Black,
+                color = MaterialTheme.colorScheme.onSurface,
                 textAlign = TextAlign.Center,
                 maxLines = 2
             )
@@ -208,45 +184,6 @@ fun AdditionalServiceGridCard(service: AdditionalServiceItemData) {
     }
 }
 
-@Composable
-fun AdditionalServicesBottomNavigationBar() {
-    NavigationBar(
-        containerColor = Color.White,
-        tonalElevation = 8.dp,
-        modifier = Modifier.height(80.dp)
-    ) {
-        val navItems = listOf(
-            Triple("Asosiy", "Home icon", false),
-            Triple("To'lovlar", "Payments icon", false),
-            Triple("O'tkazma", "Transfer icon", false),
-            Triple("Monitoring", "Monitoring icon", false),
-            Triple("Xizmatlar", "Services icon", true) // Selected for this screen
-        )
-
-        navItems.forEach { (label, iconDesc, isSelected) ->
-            NavigationBarItem(
-                icon = {
-                    // Icon Placeholder
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_deposit), // Replace with actual assets
-                        contentDescription = iconDesc,
-                        modifier = Modifier.size(24.dp)
-                    )
-                },
-                label = { Text(label, fontSize = 10.sp) },
-                selected = isSelected,
-                onClick = { },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = Color(0xFF00A67E),
-                    selectedTextColor = Color(0xFF00A67E),
-                    unselectedIconColor = Color(0xFF757575),
-                    unselectedTextColor = Color(0xFF757575),
-                    indicatorColor = Color.Transparent
-                )
-            )
-        }
-    }
-}
 
 @Preview(showBackground = true)
 @Composable

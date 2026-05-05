@@ -1,4 +1,4 @@
-package com.example.zoomrad.presentation.screens
+package com.example.zoomrad.presentation.screens.tabs.monitor
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -14,17 +14,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.zoomrad.R
 
-/**
- * Data class for each transaction item in the monitoring history
- */
+
 data class MonitoringTransactionData(
     val id: String,
     val title: String,
@@ -35,9 +30,7 @@ data class MonitoringTransactionData(
     val date: String
 )
 
-/**
- * Data class for the monitoring summary (top cards)
- */
+
 data class MonitoringHeaderSummary(
     val incomeAmount: String,
     val expenseAmount: String,
@@ -70,9 +63,8 @@ fun MonitoringScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF7F9F8))
+            .background(MaterialTheme.colorScheme.background)
     ) {
-        // Use LazyVerticalGrid with 2 columns to accommodate side-by-side summary cards
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
             modifier = Modifier
@@ -140,30 +132,28 @@ fun MonitoringHeader() {
             text = "Monitoring",
             fontSize = 28.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.Black
+            color = MaterialTheme.colorScheme.onSurface
         )
         Spacer(modifier = Modifier.width(16.dp))
         Text(
             text = "Tarix",
             fontSize = 26.sp,
             fontWeight = FontWeight.SemiBold,
-            color = Color(0xFFB2B2B2)
+            color = MaterialTheme.colorScheme.onSurface
         )
         Spacer(modifier = Modifier.weight(1f))
         
-        // Filter Icon Background
         Surface(
             modifier = Modifier.size(42.dp),
             shape = CircleShape,
-            color = Color(0xFFE0E0E0).copy(alpha = 0.5f)
+            color = MaterialTheme.colorScheme.surfaceVariant
         ) {
             Box(contentAlignment = Alignment.Center) {
-                // INFO: Icon description - Funnel or Filter outline icon
                 Text(
                     text = "▽", 
                     fontSize = 20.sp, 
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
         }
@@ -186,14 +176,12 @@ fun SummaryCard(amount: String, label: String, isIncome: Boolean) {
                 .padding(horizontal = 12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Icon Background
             Surface(
                 modifier = Modifier.size(36.dp),
                 shape = CircleShape,
                 color = Color.White.copy(alpha = 0.2f)
             ) {
                 Box(contentAlignment = Alignment.Center) {
-                    // INFO: Icon description - White arrow (Down for income, Up for expense)
                     Text(
                         text = if (isIncome) "↓" else "↑",
                         color = Color.White,
@@ -232,7 +220,7 @@ fun DateSeparatorHeader(date: String, income: String, expense: String) {
         Text(
             text = date,
             fontSize = 14.sp,
-            color = Color.Black,
+            color = MaterialTheme.colorScheme.onSurface,
             fontWeight = FontWeight.Medium
         )
         Row {
@@ -245,7 +233,7 @@ fun DateSeparatorHeader(date: String, income: String, expense: String) {
             Text(
                 text = " / ",
                 fontSize = 14.sp,
-                color = Color.Gray
+                color = MaterialTheme.colorScheme.onSurface
             )
             Text(
                 text = expense,
@@ -268,7 +256,7 @@ fun TransactionItemCard(transaction: MonitoringTransactionData) {
                 clip = false
             ),
         shape = RoundedCornerShape(18.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Row(
             modifier = Modifier
@@ -276,7 +264,6 @@ fun TransactionItemCard(transaction: MonitoringTransactionData) {
                 .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Circular Icon representing status
             val statusColor = if (transaction.isIncome) Color(0xFF33B585) else Color(0xFFD85F5F)
             Box(
                 modifier = Modifier
@@ -284,7 +271,6 @@ fun TransactionItemCard(transaction: MonitoringTransactionData) {
                     .background(statusColor, CircleShape),
                 contentAlignment = Alignment.Center
             ) {
-                // INFO: Icon description - Bold arrow (Down for green/income, Up for red/expense)
                 Text(
                     text = if (transaction.isIncome) "↓" else "↑",
                     color = Color.White,
@@ -300,7 +286,7 @@ fun TransactionItemCard(transaction: MonitoringTransactionData) {
                     text = transaction.title,
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black,
+                    color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1
                 )
                 Text(
@@ -314,7 +300,7 @@ fun TransactionItemCard(transaction: MonitoringTransactionData) {
                 Text(
                     text = transaction.time,
                     fontSize = 12.sp,
-                    color = Color.Gray
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(

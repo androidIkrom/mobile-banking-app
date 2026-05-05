@@ -1,4 +1,4 @@
-package com.example.zoomrad.presentation.screens
+package com.example.zoomrad.presentation.screens.tabs.payment
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -21,11 +21,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.zoomrad.ui.theme.*
 
-/**
- * Data class for the UI elements in the Payments LazyGrid
- */
+
 data class ServiceItemData(
     val title: String,
     val iconDescription: String
@@ -51,37 +48,33 @@ fun PaymentsScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF7F9F8)) // Exact light grey background
+            .background(MaterialTheme.colorScheme.background)
             .padding(horizontal = 16.dp)
     ) {
         Spacer(modifier = Modifier.height(20.dp))
 
-        // "To'lovlar" Title
         Text(
             text = "To'lovlar",
             fontSize = 28.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.Black
+            color = MaterialTheme.colorScheme.onSurface
         )
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Search Bar Component
         PaymentsSearchBar()
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // "Barcha xizmatlar" Header
         Text(
             text = "Barcha xizmatlar",
             fontSize = 18.sp,
             fontWeight = FontWeight.SemiBold,
-            color = Color.Black
+            color = MaterialTheme.colorScheme.onSurface
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // LazyVerticalGrid for services
         LazyVerticalGrid(
             columns = GridCells.Fixed(3),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -103,7 +96,7 @@ fun PaymentsSearchBar() {
             .fillMaxWidth()
             .height(54.dp),
         shape = RoundedCornerShape(16.dp),
-        color = Color.White,
+        color = MaterialTheme.colorScheme.surface,
         shadowElevation = 1.dp
     ) {
         Row(
@@ -115,13 +108,13 @@ fun PaymentsSearchBar() {
             Icon(
                 imageVector = Icons.Default.Search,
                 contentDescription = "Search icon",
-                tint = Color(0xFFB2B2B2),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(24.dp)
             )
             Spacer(modifier = Modifier.width(12.dp))
             Text(
                 text = "Qidiruv",
-                color = Color(0xFFB2B2B2),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 16.sp
             )
         }
@@ -141,7 +134,7 @@ fun ServiceGridCard(service: ServiceItemData) {
                 spotColor = Color.Black.copy(alpha = 0.1f)
             ),
         shape = RoundedCornerShape(18.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Column(
             modifier = Modifier
@@ -150,13 +143,15 @@ fun ServiceGridCard(service: ServiceItemData) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Gradient Circle for Icon
             Box(
                 modifier = Modifier
                     .size(52.dp)
                     .background(
                         brush = Brush.verticalGradient(
-                            colors = listOf(Color(0xFF2EBD96), Color(0xFF00A67E))
+                            colors = listOf(
+                                MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
+                                MaterialTheme.colorScheme.primary
+                            )
                         ),
                         shape = CircleShape
                     ),
@@ -171,13 +166,12 @@ fun ServiceGridCard(service: ServiceItemData) {
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            // Service Name Text
             Text(
                 text = service.title,
                 fontSize = 11.sp,
                 lineHeight = 13.sp,
                 fontWeight = FontWeight.Medium,
-                color = Color.Black,
+                color = MaterialTheme.colorScheme.onSurface,
                 textAlign = TextAlign.Center,
                 maxLines = 2
             )

@@ -1,4 +1,4 @@
-package com.example.zoomrad.presentation.screens
+package com.example.zoomrad.presentation.screens.tabs.transfer
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Text
@@ -24,11 +24,11 @@ fun TransferScreen() {
                 color = Color.Black
             )
             Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "Bu yerda o'tkazmalar bo'limi bo'ladi",
-                fontSize = 16.sp,
-                color = Color.Gray
-            )
+//            Text(
+//                text = "Bu yerda o'tkazmalar bo'limi bo'ladi",
+//                fontSize = 16.sp,
+//                color = Color.Gray
+//            )
         }
     }
 }
