@@ -13,6 +13,7 @@ ksp = "2.3.4"
 hilt = "2.59.2"
 orbit = "10.0.0"
 retrofit = "2.9.0"
+okhttp = "4.12.0"
 navigation = "2.9.7"
 work = "2.11.2"
 appcompat = "1.7.1"
@@ -48,11 +49,13 @@ orbit-compose = {group = "org.orbit-mvi", name = "orbit-compose",version.ref = "
 
 retrofit = {group = "com.squareup.retrofit2", name = "retrofit",version.ref = "retrofit"}
 retrofit-gson = {group = "com.squareup.retrofit2", name = "converter-gson",version.ref  = "retrofit"}
+okhttp-logging = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
 androidx-navigation-compose = {group = "androidx.navigation", name = "navigation-compose",version.ref = "navigation"}
 androidx-work-runtime ={ group = "androidx.work", name = "work-runtime-ktx",version.ref = "work"}
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 compose-material3 = { group = "androidx.wear.compose", name = "compose-material3", version.ref = "composeMaterial3" }
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }

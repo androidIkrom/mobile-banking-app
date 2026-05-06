@@ -1,5 +1,6 @@
-package com.example.entity
+package com.example.entity.repository.quote
 
+import com.example.entity.Quote
 import com.example.entity.local.QuoteDao
 import com.example.entity.local.QuoteEntity
 import com.example.entity.network.QuoteApi
@@ -18,9 +19,13 @@ internal class RepositoryImpl @Inject constructor(
     }
 
     override suspend fun fetchAndSaveNewQuote() {
-        val response = quoteApi.getQuote()
-        quoteDao.addQuote(QuoteEntity(0, response.author, response.quote))
+
     }
+
+//    override suspend fun fetchAndSaveNewQuote() {
+//        val response = quoteApi.getQuote()
+//        quoteDao.addQuote(QuoteEntity(0, response.author, response.quote))
+//    }
 
     override suspend fun getLastQuote(): Quote? = quoteDao.getLastQuote()?.toQuote()
 }

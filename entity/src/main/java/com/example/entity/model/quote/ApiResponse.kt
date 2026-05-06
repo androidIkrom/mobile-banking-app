@@ -1,4 +1,4 @@
-package com.example.entity.model
+package com.example.entity.model.quote
 
 data class ApiResponse(
     val author: String,

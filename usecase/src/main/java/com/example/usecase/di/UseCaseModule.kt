@@ -1,11 +1,7 @@
 package com.example.usecase.di
 
-import com.example.usecase.FetchNewQuoteUseCase
-import com.example.usecase.GetLastQuoteUseCase
-import com.example.usecase.GetLocalNoteUseCase
-import com.example.usecase.impl.FetchNewQuoteUseCaseImpl
-import com.example.usecase.impl.GetLastQuoteUseCaseImpl
-import com.example.usecase.impl.GetQuotesUseCaseImpl
+import com.example.usecase.*
+import com.example.usecase.impl.*
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -23,4 +19,18 @@ internal interface UseCaseModule {
     @Binds
     fun bindGetLastQuoteUseCase(impl: GetLastQuoteUseCaseImpl): GetLastQuoteUseCase
 
+    @Binds
+    fun bindSendOtpUseCase(impl: SendOtpUseCaseImpl): SendOtpUseCase
+
+    @Binds
+    fun bindVerifyOtpUseCase(impl: VerifyOtpUseCaseImpl): VerifyOtpUseCase
+
+    @Binds
+    fun bindRefreshTokenUseCase(impl: RefreshTokenUseCaseImpl): RefreshTokenUseCase
+
+    @Binds
+    fun bindGetProfileUseCase(impl: GetProfileUseCaseImpl): GetProfileUseCase
+
+    @Binds
+    fun bindUpdateProfileUseCase(impl: UpdateProfileUseCaseImpl): UpdateProfileUseCase
 }

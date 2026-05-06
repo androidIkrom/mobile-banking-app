@@ -1,5 +1,6 @@
-package com.example.entity
+package com.example.entity.repository.quote
 
+import com.example.entity.Quote
 import kotlinx.coroutines.flow.Flow
 
 interface QuoteRepository {

@@ -29,7 +29,6 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.zoomrad.ui.theme.*
 import com.example.zoomrad.R
-import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen(navController: NavController, onMenuClick: () -> Unit) {
@@ -44,7 +43,7 @@ fun HomeScreen(navController: NavController, onMenuClick: () -> Unit) {
             contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            item { BalanceCard() }
+            item { BalanceCard(navController) }
             item { PointsAndCashbackRow() }
             item { QuickActionsRow() }
             item { PaymentsSection() }
@@ -77,6 +76,7 @@ fun DrawerContent(
                     ),
                     shape = RoundedCornerShape(bottomEnd = 40.dp)
                 )
+                .clickable { onItemClick("Profil") }
                 .padding(24.dp)
         ) {
             Column(
@@ -89,13 +89,12 @@ fun DrawerContent(
                         .clip(CircleShape)
                         .background(Color.White)
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Person,
-                        contentDescription = null,
+                    Image(
+                        painter = painterResource(R.drawable.ic_profile),
+                        contentDescription = "ic_user",
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(12.dp),
-                        tint = Color.Gray
+                            .padding(3.dp),
                     )
                 }
                 Spacer(modifier = Modifier.height(16.dp))
@@ -143,8 +142,8 @@ fun DrawerContent(
             DrawerItemData("Profil", Icons.Default.Person),
             DrawerItemData("Sozlamalar", Icons.Default.Settings),
             DrawerItemData("Xavfsizlik", Icons.Default.Lock),
-            DrawerItemData("Mening arizalarim", Icons.Default.Info), // Placeholder as requested
-            DrawerItemData("Yordam", Icons.Default.Info), // Placeholder as requested
+            DrawerItemData("Mening arizalarim", Icons.Default.Info),
+            DrawerItemData("Yordam", Icons.Default.Info),
             DrawerItemData("Dasturni ulashing", Icons.Default.Share),
             DrawerItemData("Ilova haqida", Icons.Default.Info)
         )
@@ -303,7 +302,7 @@ fun BadgedIconContainer(iconRes: Int, badgeCount: String) {
 }
 
 @Composable
-fun BalanceCard() {
+fun BalanceCard(navController: NavController) {
     Card(
         shape = RoundedCornerShape(24.dp),
         modifier = Modifier.fillMaxWidth(),
@@ -348,7 +347,7 @@ fun BalanceCard() {
                 )
                 Spacer(modifier = Modifier.height(20.dp))
                 Button(
-                    onClick = { },
+                    onClick = { navController.navigate("cards") },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
                     ),

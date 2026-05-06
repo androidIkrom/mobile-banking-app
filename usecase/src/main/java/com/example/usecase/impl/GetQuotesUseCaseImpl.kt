@@ -1,6 +1,6 @@
 package com.example.usecase.impl
 
-import com.example.entity.QuoteRepository
+import com.example.entity.repository.quote.QuoteRepository
 import com.example.usecase.GetLocalNoteUseCase
 import javax.inject.Inject
 
@@ -9,4 +9,3 @@ internal class GetQuotesUseCaseImpl @Inject constructor(
 ) : GetLocalNoteUseCase {
     override suspend operator fun invoke() = repository.getLocalNotes()
 }
-//jkgfgfgfgfggfgf

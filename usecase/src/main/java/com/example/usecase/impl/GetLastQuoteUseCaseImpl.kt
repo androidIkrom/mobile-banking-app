@@ -1,7 +1,7 @@
 package com.example.usecase.impl
 
 import com.example.entity.Quote
-import com.example.entity.QuoteRepository
+import com.example.entity.repository.quote.QuoteRepository
 import com.example.usecase.GetLastQuoteUseCase
 import javax.inject.Inject
 

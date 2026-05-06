@@ -247,7 +247,6 @@ fun SettingsRow(item: SettingsItemData) {
             color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.weight(1f)
         )
-
         if (item.value != null) {
             Surface(
                 color = MaterialTheme.colorScheme.surfaceVariant,
@@ -291,6 +290,5 @@ fun SettingsRow(item: SettingsItemData) {
 fun SettingsScreenPreview() {
     val mockViewModel: MainViewModel = viewModel()
     SettingsScreen(mockViewModel){
-
     }
 }

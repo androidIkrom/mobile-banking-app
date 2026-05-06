@@ -1,21 +1,15 @@
 package com.example.entity.di
 
-import android.content.Context
-import androidx.room.Room
-import com.example.entity.QuoteRepository
-import com.example.entity.RepositoryImpl
-import com.example.entity.local.QuoteDao
-import com.example.entity.local.QuoteDatabase
-import com.example.entity.network.QuoteApi
+import com.example.entity.repository.auth.AuthRepository
+import com.example.entity.repository.auth.AuthRepositoryImpl
+import com.example.entity.repository.quote.QuoteRepository
+import com.example.entity.repository.quote.RepositoryImpl
+import com.example.entity.repository.user.UserRepository
+import com.example.entity.repository.user.UserRepositoryImpl
 import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -23,4 +17,9 @@ internal interface RepositoryModule {
     @Binds
     fun bindRepository(repositoryImpl: RepositoryImpl): QuoteRepository
 
+    @Binds
+    fun bindAuthRepository(authRepositoryImpl: AuthRepositoryImpl): AuthRepository
+
+    @Binds
+    fun bindUserRepository(userRepositoryImpl: UserRepositoryImpl): UserRepository
 }
