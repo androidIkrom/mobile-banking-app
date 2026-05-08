@@ -26,6 +26,10 @@ class PrefsManager @Inject constructor(
         get() = prefs.getBoolean("is_new_user", false)
         set(value) = prefs.edit { putBoolean("is_new_user", value) }
 
+    var appPassword: String?
+        get() = prefs.getString("app_password", null)
+        set(value) = prefs.edit { putString("app_password", value) }
+
     fun clear() {
         prefs.edit { clear() }
     }

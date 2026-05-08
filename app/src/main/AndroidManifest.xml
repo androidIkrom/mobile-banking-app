@@ -13,7 +13,13 @@
         android:roundIcon="@drawable/icon"
         android:supportsRtl="true"
         android:enableOnBackInvokedCallback="true"
-        android:theme="@style/Theme.QuoteReminder">
+        android:theme="@style/Theme.QuoteReminder"
+        tools:targetApi="33">
+        <activity
+            android:name=".presentation.screens.chucker.MyChuckerActivity"
+            android:exported="true"
+            android:label="Network Logs"
+            android:theme="@style/Theme.QuoteReminder" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -25,6 +31,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
     </application>
 
     <uses-permission android:name="android.permission.INTERNET"/>

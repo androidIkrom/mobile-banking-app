@@ -1,5 +1,6 @@
 package com.example.zoomrad.presentation.screens.cards
 
+import android.widget.Toast
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -8,6 +9,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.Close
@@ -22,13 +24,19 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.zoomrad.ui.theme.*
+import com.example.presenter.vm.cards.CardViewModel
+import com.example.zoomrad.ui.theme.GreenPrimary
+import com.example.zoomrad.ui.theme.QuoteReminderTheme
+import java.util.Locale
 
 data class CardData(
     val id: String,
@@ -52,23 +60,82 @@ data class AddCardOption(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CardsScreen(navController: NavController) {
-    var showAddCardSheet by remember { mutableStateOf(false) } // Initially false
+fun CardsScreen(
+    navController: NavController,
+    viewModel: CardViewModel = hiltViewModel()
+) {
+    var showAddCardSheet by remember { mutableStateOf(false) }
+    var showAttachDialog by remember { mutableStateOf(false) }
+    var cardNumber by remember { mutableStateOf("") }
+    
     val sheetState = rememberModalBottomSheetState()
+    
+    val apiCards by viewModel.cards.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+    val error by viewModel.error.collectAsState()
+    val context = LocalContext.current
 
-    val cards = listOf(
-        CardData(
-            id = "1",
-            bankName = "AloqaBank",
-            isPrimary = true,
-            cardNumber = "4916 99** **** 9319",
-            cardHolderName = "Ikrombek Anvar o'g'li",
-            balance = "89 055.00",
-            currency = "UZS",
-            cardType = "Visa",
-            gradientColors = listOf(Color(0xFF003D2B), Color(0xFF007958), Color(0xFF004D40))
+    LaunchedEffect(Unit) {
+        viewModel.fetchCards()
+    }
+
+    LaunchedEffect(error) {
+        error?.let {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    if (showAttachDialog) {
+        AlertDialog(
+            onDismissRequest = { showAttachDialog = false },
+            title = { Text("Karta qo'shish") },
+            text = {
+                OutlinedTextField(
+                    value = cardNumber,
+                    onValueChange = { if (it.length <= 16) cardNumber = it },
+                    label = { Text("Karta raqami") },
+                    placeholder = { Text("8600...") },
+                    modifier = Modifier.fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    singleLine = true
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        viewModel.attachCard(cardNumber)
+                        showAttachDialog = false
+                        cardNumber = ""
+                    },
+                    enabled = cardNumber.length == 16 && !isLoading
+                ) {
+                    Text("Qo'shish")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showAttachDialog = false }) {
+                    Text("Bekor qilish")
+                }
+            }
         )
-    )
+    }
+
+    val cards = apiCards.map { apiCard ->
+        CardData(
+            id = apiCard.id,
+            bankName = if (apiCard.type == "UZCARD") "Uzcard Bank" else "Humo Bank",
+            isPrimary = apiCard.isMain,
+            cardNumber = apiCard.maskedNumber,
+            cardHolderName = apiCard.holderName,
+            balance = String.format(Locale.getDefault(), "%,d", apiCard.balance).replace(',', ' '),
+            currency = apiCard.currency,
+            cardType = apiCard.type,
+            gradientColors = if (apiCard.type == "HUMO")
+                listOf(Color(0xFF0D47A1), Color(0xFF1976D2))
+            else
+                listOf(Color(0xFF003D2B), Color(0xFF007958), Color(0xFF004D40))
+        )
+    }
 
     val filters = listOf("Barchasi", "Visa", "Uzcard", "Humo")
     var selectedFilter by remember { mutableStateOf("Barchasi") }
@@ -100,7 +167,6 @@ fun CardsScreen(navController: NavController) {
                 .fillMaxSize()
                 .padding(padding)
         ) {
-//            Filter
             LazyRow(
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -122,18 +188,23 @@ fun CardsScreen(navController: NavController) {
                 }
             }
 
-            // karta list
             LazyColumn(
                 modifier = Modifier.weight(1f),
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
+                if (isLoading && cards.isEmpty()) {
+                    item {
+                        Box(modifier = Modifier.fillParentMaxSize(), contentAlignment = Alignment.Center) {
+                            CircularProgressIndicator()
+                        }
+                    }
+                }
                 items(cards) { card ->
                     BankCardItem(card)
                 }
             }
 
-//            add
             Button(
                 onClick = { showAddCardSheet = true },
                 modifier = Modifier
@@ -166,7 +237,13 @@ fun CardsScreen(navController: NavController) {
                     )
                 }
             ) {
-                AddCardContent(onClose = { showAddCardSheet = false })
+                AddCardContent(
+                    onClose = { showAddCardSheet = false },
+                    onAttachClick = {
+                        showAddCardSheet = false
+                        showAttachDialog = true
+                    }
+                )
             }
         }
     }
@@ -240,7 +317,6 @@ fun BankCardItem(card: CardData) {
                         }
                     }
                 }
-//                  Name, number
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -268,7 +344,6 @@ fun BankCardItem(card: CardData) {
                     )
                 }
 
-//                balans
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.Bottom
@@ -293,7 +368,7 @@ fun BankCardItem(card: CardData) {
 }
 
 @Composable
-fun AddCardContent(onClose: () -> Unit) {
+fun AddCardContent(onClose: () -> Unit, onAttachClick: () -> Unit) {
     val options = listOf(
         AddCardOption("Yangi karta", "Yangi karta qo'shish"),
         AddCardOption("Barcha Aloqabank kartalari", "Hammasini bir martada yuklang"),
@@ -324,7 +399,11 @@ fun AddCardContent(onClose: () -> Unit) {
         Spacer(modifier = Modifier.height(16.dp))
 
         options.forEach { option ->
-            AddCardItem(option)
+            AddCardItem(option, onClick = {
+                if (option.title == "Yangi karta") {
+                    onAttachClick()
+                }
+            })
             Spacer(modifier = Modifier.height(12.dp))
         }
         
@@ -333,9 +412,9 @@ fun AddCardContent(onClose: () -> Unit) {
 }
 
 @Composable
-fun AddCardItem(option: AddCardOption) {
+fun AddCardItem(option: AddCardOption, onClick: () -> Unit) {
     Surface(
-        onClick = { /* Handle click */ },
+        onClick = onClick,
         shape = RoundedCornerShape(20.dp),
         color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
         modifier = Modifier.fillMaxWidth()

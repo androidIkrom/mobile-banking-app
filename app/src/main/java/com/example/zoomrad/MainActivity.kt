@@ -1,9 +1,15 @@
 package com.example.zoomrad
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -33,33 +39,23 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.entity.local.PrefsManager
 import com.example.presenter.vm.auth.AuthViewModel
 import com.example.presenter.vm.profile.ProfileViewModel
+import com.example.zoomrad.presentation.navigation.AppNavHost
 import com.example.zoomrad.presentation.navigation.BottomNavItem
-import com.example.zoomrad.presentation.screens.auth.LoginScreen
-import com.example.zoomrad.presentation.screens.splash.SplashScreen
-import com.example.zoomrad.presentation.screens.auth.VerifyOtpScreen
-import com.example.zoomrad.presentation.screens.cards.CardsScreen
-import com.example.zoomrad.presentation.screens.profile.ProfileScreen
-import com.example.zoomrad.presentation.screens.settings.SettingsScreen
 import com.example.zoomrad.presentation.screens.tabs.home.DrawerContent
-import com.example.zoomrad.presentation.screens.tabs.home.HomeScreen
-import com.example.zoomrad.presentation.screens.tabs.monitor.MonitoringScreen
-import com.example.zoomrad.presentation.screens.tabs.payment.PaymentsScreen
-import com.example.zoomrad.presentation.screens.tabs.service.AdditionalServicesScreen
-import com.example.zoomrad.presentation.screens.tabs.transfer.TransferScreen
 import com.example.zoomrad.ui.theme.AppTheme
 import com.example.zoomrad.ui.theme.QuoteReminderTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -88,6 +84,20 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainScreen(viewModel: MainViewModel, prefsManager: PrefsManager) {
     val navController = rememberNavController()
+    val context = LocalContext.current
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {
+        if (it)
+            Toast.makeText(context, "rahmat", Toast.LENGTH_SHORT).show()
+    }
+
+    LaunchedEffect(Unit) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val isPermitted = ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
+            if (!isPermitted){
+                launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+    }
     val navItems = listOf(
         BottomNavItem.Asosiy,
         BottomNavItem.Tolovlar,
@@ -102,7 +112,7 @@ fun MainScreen(viewModel: MainViewModel, prefsManager: PrefsManager) {
     }
 
     val startDestination = remember {
-        if (prefsManager.accessToken != null) BottomNavItem.Asosiy.route else "splash"
+        if (prefsManager.accessToken != null) "lock" else "splash"
     }
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -188,63 +198,15 @@ fun MainScreen(viewModel: MainViewModel, prefsManager: PrefsManager) {
             }
         ) { innerPadding ->
             Box(modifier = Modifier.padding(innerPadding)) {
-                NavHost(
+                AppNavHost(
                     navController = navController,
                     startDestination = startDestination,
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    composable("splash") {
-                        SplashScreen(
-                            prefsManager = prefsManager,
-                            onNavigateToLogin = {
-                                navController.navigate("login") {
-                                    popUpTo("splash") { inclusive = true }
-                                }
-                            },
-                            onNavigateToHome = {
-                                navController.navigate(BottomNavItem.Asosiy.route) {
-                                    popUpTo("splash") { inclusive = true }
-                                }
-                            }
-                        )
-                    }
-                    composable(BottomNavItem.Asosiy.route) {
-                        HomeScreen(navController) {
-                            scope.launch { drawerState.open() }
-                        }
-                    }
-                    composable(BottomNavItem.Tolovlar.route) { PaymentsScreen() }
-                    composable(BottomNavItem.Otkazma.route) { TransferScreen() }
-                    composable(BottomNavItem.Monitoring.route) { MonitoringScreen() }
-                    composable(BottomNavItem.Xizmatlar.route) { AdditionalServicesScreen() }
-                    composable("settings") {
-                        SettingsScreen(viewModel) {
-                            navController.popBackStack()
-                        }
-                    }
-                    composable("profile") {
-                        ProfileScreen(viewModel = profileViewModel, onBack = {
-                            navController.popBackStack()
-                        })
-                    }
-                    composable("login") {
-                        LoginScreen(navController, authViewModel) {
-                            navController.navigate("otp")
-                        }
-                    }
-                    composable("otp") {
-                        VerifyOtpScreen(navController, viewModel = authViewModel, onBackToLogin = {
-                            navController.popBackStack()
-                        }, onVerifySuccess = {
-                            navController.navigate(BottomNavItem.Asosiy.route) {
-                                popUpTo("login") {
-                                    inclusive = true
-                                }
-                            }
-                        })
-                    }
-                    composable("cards") { CardsScreen(navController) }
-                }
+                    prefsManager = prefsManager,
+                    mainViewModel = viewModel,
+                    authViewModel = authViewModel,
+                    profileViewModel = profileViewModel,
+                    onOpenDrawer = { scope.launch { drawerState.open() } }
+                )
             }
         }
     }

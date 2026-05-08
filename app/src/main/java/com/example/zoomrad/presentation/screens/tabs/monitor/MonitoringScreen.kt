@@ -9,7 +9,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -18,7 +18,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.presenter.vm.transaction.TransactionViewModel
+import java.text.SimpleDateFormat
+import java.util.*
 
 data class MonitoringTransactionData(
     val id: String,
@@ -27,38 +30,49 @@ data class MonitoringTransactionData(
     val amount: String,
     val time: String,
     val isIncome: Boolean,
-    val date: String
-)
-
-
-data class MonitoringHeaderSummary(
-    val incomeAmount: String,
-    val expenseAmount: String,
-    val dayIncome: String,
-    val dayExpense: String,
-    val date: String
+    val date: String,
+    val rawAmount: Long
 )
 
 @Composable
-fun MonitoringScreen() {
-    val summary = MonitoringHeaderSummary(
-        incomeAmount = "2 014 670",
-        expenseAmount = "2 065 530",
-        dayIncome = "+ 1 000 000",
-        dayExpense = "- 1 006 800",
-        date = "30.04.2026"
-    )
+fun MonitoringScreen(
+    viewModel: TransactionViewModel = hiltViewModel()
+) {
+    val apiTransactions by viewModel.transactions.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
 
-    val transactions = listOf(
-        MonitoringTransactionData("1", "ATTO_POS", "491699***9319", "- 1 700", "30-aprel, 22:26", false, "30.04.2026"),
-        MonitoringTransactionData("2", "ATTO_POS", "491699***9319", "- 1 700", "30-aprel, 21:06", false, "30.04.2026"),
-        MonitoringTransactionData("3", "YATT RAXIMDJANOVA SHOIRA", "491699***9319", "- 1 000 000", "30-aprel, 20:21", false, "30.04.2026"),
-        MonitoringTransactionData("4", "ATTO_POS", "491699***9319", "- 1 700", "30-aprel, 13:19", false, "30.04.2026"),
-        MonitoringTransactionData("5", "ATTO_POS", "491699***9319", "- 1 700", "30-aprel, 07:35", false, "30.04.2026"),
-        MonitoringTransactionData("6", "PAYME*MARGUBA S", "491699***9319", "+ 1 000 000", "30-aprel, 00:00", true, "30.04.2026"),
-        MonitoringTransactionData("7", "ATTO_POS", "491699***9319", "- 1 700", "27-aprel, 18:24", false, "27.04.2026"),
-        MonitoringTransactionData("8", "ATTO_POS", "491699***9319", "- 1 700", "27-aprel, 12:59", false, "27.04.2026")
-    )
+    LaunchedEffect(Unit) {
+        viewModel.fetchTransactions()
+    }
+
+    val transactions = apiTransactions.map { api ->
+        val isIncome = api.type == "TRANSFER_IN" || api.type == "LOAN_DISBURSEMENT"
+        val amountPrefix = if (isIncome) "+ " else "- "
+        
+        val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
+        val dateOutputFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
+        val timeOutputFormat = SimpleDateFormat("d-MMMM, HH:mm", Locale.getDefault())
+        
+        val dateObj = try { inputFormat.parse(api.createdAt) } catch (_: Exception) { Date() }
+
+        MonitoringTransactionData(
+            id = api.id,
+            title = api.type.replace("_", " "),
+            subtitle = api.description,
+            amount = amountPrefix + String.format(Locale.getDefault(), "%,d", api.amount).replace(',', ' '),
+            time = timeOutputFormat.format(dateObj ?: Date()),
+            isIncome = isIncome,
+            date = dateOutputFormat.format(dateObj ?: Date()),
+            rawAmount = api.amount
+        )
+    }
+
+    val totalIncome = remember(apiTransactions) {
+        apiTransactions.filter { it.type == "TRANSFER_IN" || it.type == "LOAN_DISBURSEMENT" }.sumOf { it.amount }
+    }
+    val totalExpense = remember(apiTransactions) {
+        apiTransactions.filter { it.type != "TRANSFER_IN" && it.type != "LOAN_DISBURSEMENT" }.sumOf { it.amount }
+    }
 
     Column(
         modifier = Modifier
@@ -73,46 +87,51 @@ fun MonitoringScreen() {
             verticalArrangement = Arrangement.spacedBy(10.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // Main Screen Header: Monitoring, Tarix and Filter Icon
             item(span = { GridItemSpan(2) }) {
                 MonitoringHeader()
             }
 
-            // Summary Cards: Tushumlar (Green) and Chiqimlar (Red)
-            item {
-                SummaryCard(
-                    amount = summary.incomeAmount,
-                    label = "Tushumlar",
-                    isIncome = true
-                )
-            }
-            item {
-                SummaryCard(
-                    amount = summary.expenseAmount,
-                    label = "Chiqimlar",
-                    isIncome = false
-                )
-            }
-
-            // Transaction groups separated by date
-            val groupedTransactions = transactions.groupBy { it.date }
-            groupedTransactions.forEach { (date, items) ->
-                // Date separator with daily totals
+            if (isLoading && transactions.isEmpty()) {
                 item(span = { GridItemSpan(2) }) {
-                    DateSeparatorHeader(
-                        date = date,
-                        income = summary.dayIncome,
-                        expense = if (date == "30.04.2026") summary.dayExpense else "- 207 100" // Example value for other dates
+                    Box(modifier = Modifier.fillMaxWidth().height(200.dp), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
+                    }
+                }
+            } else {
+                item {
+                    SummaryCard(
+                        amount = String.format(Locale.getDefault(), "%,d", totalIncome).replace(',', ' '),
+                        label = "Tushumlar",
+                        isIncome = true
+                    )
+                }
+                item {
+                    SummaryCard(
+                        amount = String.format(Locale.getDefault(), "%,d", totalExpense).replace(',', ' '),
+                        label = "Chiqimlar",
+                        isIncome = false
                     )
                 }
 
-                // List of transaction cards for this date (full width)
-                items(items, span = { GridItemSpan(2) }) { transaction ->
-                    TransactionItemCard(transaction)
+                val groupedTransactions = transactions.groupBy { it.date }
+                groupedTransactions.forEach { (date, items) ->
+                    val dayIncome = items.filter { it.isIncome }.sumOf { it.rawAmount }
+                    val dayExpense = items.filter { !it.isIncome }.sumOf { it.rawAmount }
+
+                    item(span = { GridItemSpan(2) }) {
+                        DateSeparatorHeader(
+                            date = date,
+                            income = "+ " + String.format(Locale.getDefault(), "%,d", dayIncome).replace(',', ' '),
+                            expense = "- " + String.format(Locale.getDefault(), "%,d", dayExpense).replace(',', ' ')
+                        )
+                    }
+
+                    items(items, span = { GridItemSpan(2) }) { transaction ->
+                        TransactionItemCard(transaction)
+                    }
                 }
             }
 
-            // Extra padding at the bottom for scrolling
             item(span = { GridItemSpan(2) }) {
                 Spacer(modifier = Modifier.height(16.dp))
             }
