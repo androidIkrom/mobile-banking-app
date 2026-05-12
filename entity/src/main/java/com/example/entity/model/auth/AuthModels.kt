@@ -29,3 +29,7 @@ data class AuthData(
     val refreshToken: String,
     val isNewUser: Boolean
 )
+
+data class SetPinRequest(
+    val pin: String
+)

@@ -1,4 +1,4 @@
-package com.example.entity.network
+package com.example.entity.network.auth
 
 import com.example.entity.local.PrefsManager
 import com.example.entity.model.auth.RefreshTokenRequest

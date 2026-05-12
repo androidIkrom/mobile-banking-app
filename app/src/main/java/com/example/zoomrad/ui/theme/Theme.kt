@@ -20,8 +20,8 @@ private val DarkColorScheme = darkColorScheme(
     onSurface = DarkTextPrimary,
     surfaceVariant = Color(0xFF37474F),
     onSurfaceVariant = DarkTextSecondary,
-    secondaryContainer = Color(0xFF1D5A4E), // Gradient Start
-    onSecondaryContainer = Color(0xFF144238), // Gradient End
+    secondaryContainer = Color(0xFF1D5A4E),
+    onSecondaryContainer = Color(0xFF144238),
     outline = Color(0xFF455A64)
 )
 
@@ -34,16 +34,16 @@ private val LightColorScheme = lightColorScheme(
     onSurface = Color.Black,
     surfaceVariant = Color(0xFFF5F5F5),
     onSurfaceVariant = TextGray,
-    secondaryContainer = Color(0xFFD6F5EF), // Gradient Start
-    onSecondaryContainer = Color(0xFFA7E6D9), // Gradient End
+    secondaryContainer = Color(0xFFD6F5EF),
+    onSecondaryContainer = Color(0xFFA7E6D9),
     outline = BorderColor
 )
 
 @Composable
-fun QuoteReminderTheme(
+fun ZoomradTheme(
     appTheme: AppTheme = AppTheme.System,
     darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = false, // Set to false to prioritize our custom colors
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current

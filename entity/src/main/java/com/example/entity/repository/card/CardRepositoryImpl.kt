@@ -2,7 +2,7 @@ package com.example.entity.repository.card
 
 import com.example.entity.model.card.AttachCardRequest
 import com.example.entity.model.card.CardData
-import com.example.entity.network.CardApiService
+import com.example.entity.network.card.CardApiService
 import javax.inject.Inject
 
 internal class CardRepositoryImpl @Inject constructor(

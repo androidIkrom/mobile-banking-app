@@ -3,7 +3,7 @@ package com.example.entity.repository.user
 import com.example.entity.model.transaction.TransactionData
 import com.example.entity.model.user.UpdateProfileRequest
 import com.example.entity.model.user.UserProfile
-import com.example.entity.network.UserApiService
+import com.example.entity.network.user.UserApiService
 import javax.inject.Inject
 
 internal class UserRepositoryImpl @Inject constructor(

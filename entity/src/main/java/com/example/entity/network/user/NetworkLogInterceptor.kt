@@ -1,5 +1,6 @@
-package com.example.entity.network
+package com.example.entity.network.user
 
+import android.R
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -87,7 +88,8 @@ class NetworkLogInterceptor @Inject constructor(
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
             if (notificationManager.getNotificationChannel(channelId) == null){
                 val name = "Network Logs"
-                val channel = NotificationChannel(channelId,name, NotificationManager.IMPORTANCE_HIGH)
+                val channel =
+                    NotificationChannel(channelId, name, NotificationManager.IMPORTANCE_HIGH)
                 notificationManager.createNotificationChannel(channel)
             }
         }
@@ -102,7 +104,7 @@ class NetworkLogInterceptor @Inject constructor(
             context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
         val notification = NotificationCompat.Builder(context, channelId)
-            .setSmallIcon(android.R.drawable.stat_notify_sync)
+            .setSmallIcon(R.drawable.stat_notify_sync)
             .setContentTitle("Http ${log.code}: ${log.method}").setContentText(log.url)
             .setAutoCancel(true)
             .setStyle(NotificationCompat.BigTextStyle().bigText("message: ${log.message}"))

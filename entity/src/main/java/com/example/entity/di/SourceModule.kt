@@ -4,12 +4,15 @@ import android.content.Context
 import androidx.room.Room
 import com.example.entity.local.LogDatabase
 import com.example.entity.local.NetworkLogDao
-import com.example.entity.network.AuthApiService
-import com.example.entity.network.AuthInterceptor
-import com.example.entity.network.CardApiService
-import com.example.entity.network.NetworkLogInterceptor
-import com.example.entity.network.TokenAuthenticator
-import com.example.entity.network.UserApiService
+import com.example.entity.network.auth.AuthApiService
+import com.example.entity.network.auth.AuthInterceptor
+import com.example.entity.network.auth.TokenAuthenticator
+import com.example.entity.network.card.CardApiService
+import com.example.entity.network.loan.LoanApiService
+import com.example.entity.network.payment.PaymentService
+import com.example.entity.network.transfer.TransferApiService
+import com.example.entity.network.user.NetworkLogInterceptor
+import com.example.entity.network.user.UserApiService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -87,5 +90,17 @@ internal class SourceModule {
     fun provideUserApi(retrofit: Retrofit): UserApiService =
         retrofit.create(UserApiService::class.java)
 
+    @Provides
+    @Singleton
+    fun provideTransferApi(retrofit: Retrofit): TransferApiService = retrofit.create(
+        TransferApiService::class.java)
+
+    @Singleton
+    @Provides
+    fun providePaymentApi(retrofit: Retrofit) : PaymentService = retrofit.create(PaymentService::class.java)
+
+    @Singleton
+    @Provides
+    fun provideLoanApi(retrofit: Retrofit): LoanApiService = retrofit.create(LoanApiService::class.java)
 
 }

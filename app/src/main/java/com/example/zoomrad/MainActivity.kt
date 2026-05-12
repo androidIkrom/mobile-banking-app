@@ -13,7 +13,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
@@ -53,11 +52,12 @@ import androidx.navigation.compose.rememberNavController
 import com.example.entity.local.PrefsManager
 import com.example.presenter.vm.auth.AuthViewModel
 import com.example.presenter.vm.profile.ProfileViewModel
+import com.example.presenter.vm.transfer.TransferViewModel
 import com.example.zoomrad.presentation.navigation.AppNavHost
 import com.example.zoomrad.presentation.navigation.BottomNavItem
 import com.example.zoomrad.presentation.screens.tabs.home.DrawerContent
 import com.example.zoomrad.ui.theme.AppTheme
-import com.example.zoomrad.ui.theme.QuoteReminderTheme
+import com.example.zoomrad.ui.theme.ZoomradTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -74,7 +74,7 @@ class MainActivity : ComponentActivity() {
             val viewModel: MainViewModel = viewModel()
             val themeMode by viewModel.themeMode
 
-            QuoteReminderTheme(appTheme = themeMode) {
+            ZoomradTheme(appTheme = themeMode) {
                 MainScreen(viewModel, prefsManager)
             }
         }
@@ -124,6 +124,7 @@ fun MainScreen(viewModel: MainViewModel, prefsManager: PrefsManager) {
     }
     val authViewModel: AuthViewModel = viewModel()
     val profileViewModel: ProfileViewModel = viewModel()
+    val transferViewModel: TransferViewModel = viewModel()
     ModalNavigationDrawer(
         drawerState = drawerState,
         gesturesEnabled = currentRoute == BottomNavItem.Asosiy.route,
@@ -138,6 +139,7 @@ fun MainScreen(viewModel: MainViewModel, prefsManager: PrefsManager) {
                 windowInsets = WindowInsets(0)
             ) {
                 DrawerContent(
+                    profileViewModel = profileViewModel,
                     onItemClick = { item ->
                         scope.launch { drawerState.close() }
                         when (item) {
@@ -205,6 +207,7 @@ fun MainScreen(viewModel: MainViewModel, prefsManager: PrefsManager) {
                     mainViewModel = viewModel,
                     authViewModel = authViewModel,
                     profileViewModel = profileViewModel,
+                    transferViewModel = transferViewModel,
                     onOpenDrawer = { scope.launch { drawerState.open() } }
                 )
             }

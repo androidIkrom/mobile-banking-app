@@ -1,4 +1,4 @@
-package com.example.entity.network
+package com.example.entity.network.user
 
 import com.example.entity.model.auth.BaseResponse
 import com.example.entity.model.transaction.TransactionHistoryResponse

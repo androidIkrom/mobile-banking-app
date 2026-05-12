@@ -12,8 +12,11 @@ import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -23,7 +26,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.entity.model.loan.LoanData
+import com.example.presenter.vm.loan.LoanViewModel
 import com.example.zoomrad.R
+import com.example.zoomrad.presentation.screens.tabs.home.formatAmount
+import java.util.Locale
 
 data class AdditionalServiceItemData(
     val title: String,
@@ -31,7 +39,11 @@ data class AdditionalServiceItemData(
 )
 
 @Composable
-fun AdditionalServicesScreen() {
+fun AdditionalServicesScreen(
+    viewModel: LoanViewModel = hiltViewModel()
+) {
+    val state by viewModel.container.stateFlow.collectAsState()
+
     val services = listOf(
         AdditionalServiceItemData("Onlayn to'lov Alipay+", "Alipay+ logo icon"),
         AdditionalServiceItemData("Kids Card", "Child face icon"),
@@ -83,6 +95,27 @@ fun AdditionalServicesScreen() {
 
         Spacer(modifier = Modifier.height(24.dp))
 
+        if (state.loans.isNotEmpty()) {
+            Text(
+                text = "Mening kreditlarim",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(bottom = 12.dp)
+            )
+            state.loans.forEach { loan ->
+                LoanCard(loan)
+                Spacer(modifier = Modifier.height(10.dp))
+            }
+            Spacer(modifier = Modifier.height(14.dp))
+        }
+
+        Text(
+            text = "Xizmatlar",
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(bottom = 12.dp)
+        )
+
         LazyVerticalGrid(
             columns = GridCells.Fixed(3),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -92,6 +125,89 @@ fun AdditionalServicesScreen() {
         ) {
             items(services) { service ->
                 AdditionalServiceGridCard(service)
+            }
+        }
+    }
+}
+
+@Composable
+fun LoanCard(loan: LoanData) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .shadow(4.dp, RoundedCornerShape(16.dp)),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Kredit #${loan.id.take(8).uppercase(Locale.getDefault())}",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 14.sp
+                )
+                Surface(
+                    color = if (loan.status == "ACTIVE") Color(0xFFE8F5E9) else Color(0xFFF5F5F5),
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Text(
+                        text = if (loan.status == "ACTIVE") "Faol" else "Yopilgan",
+                        color = if (loan.status == "ACTIVE") Color(0xFF2E7D32) else Color.Gray,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(12.dp))
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(text = "Qolgan qarz", color = Color.Gray, fontSize = 12.sp)
+                    Text(
+                        text = formatAmount(loan.remaining),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+                Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.End) {
+                    Text(text = "Keyingi to'lov", color = Color.Gray, fontSize = 12.sp)
+                    Text(
+                        text = loan.nextDueDate,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(12.dp))
+            LinearProgressIndicator(
+                progress = { (loan.totalAmount - loan.remaining).toFloat() / loan.totalAmount },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(8.dp)
+                    .clip(RoundedCornerShape(4.dp)),
+                color = MaterialTheme.colorScheme.primary,
+                trackColor = MaterialTheme.colorScheme.primaryContainer
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "Jami: ${formatAmount(loan.totalAmount)}",
+                    fontSize = 11.sp,
+                    color = Color.Gray
+                )
+                Text(
+                    text = "${loan.termMonths} oy",
+                    fontSize = 11.sp,
+                    color = Color.Gray
+                )
             }
         }
     }

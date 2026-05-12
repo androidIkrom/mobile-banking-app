@@ -1,8 +1,9 @@
-package com.example.entity.network
+package com.example.entity.network.auth
 
 import com.example.entity.model.auth.AuthData
 import com.example.entity.model.auth.BaseResponse
 import com.example.entity.model.auth.RefreshTokenRequest
+import com.example.entity.model.auth.SetPinRequest
 import com.example.entity.model.auth.SendOtpRequest
 import com.example.entity.model.auth.VerifyOtpRequest
 import retrofit2.Response
@@ -25,4 +26,9 @@ interface AuthApiService {
     suspend fun refreshToken(
         @Body request: RefreshTokenRequest
     ): Response<BaseResponse<AuthData>>
+
+    @POST("/api/v1/auth/set-pin")
+    suspend fun setPin(
+        @Body request: SetPinRequest
+    ): Response<BaseResponse<Unit>>
 }

@@ -3,16 +3,46 @@ package com.example.zoomrad.presentation.screens.tabs.home
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Share
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,13 +55,46 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.zoomrad.ui.theme.*
+import coil.compose.AsyncImage
+import com.example.entity.model.card.CardData
+import com.example.entity.model.payment.PaymentProvider
+import com.example.presenter.vm.cards.CardViewModel
+import com.example.presenter.vm.payment.PaymentViewModel
+import com.example.presenter.vm.transaction.TransactionViewModel
 import com.example.zoomrad.R
+import com.example.zoomrad.ui.theme.GreenPrimary
+import com.example.zoomrad.ui.theme.NotificationRed
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
+import java.util.Locale
 
 @Composable
-fun HomeScreen(navController: NavController, onMenuClick: () -> Unit) {
+fun HomeScreen(
+    navController: NavController,
+    cardViewModel: CardViewModel = hiltViewModel(),
+    paymentViewModel: PaymentViewModel = hiltViewModel(),
+    transactionViewModel: TransactionViewModel = hiltViewModel(),
+    onMenuClick: () -> Unit
+) {
+    val cards by cardViewModel.cards.collectAsState()
+    val mainCard = cards.find { it.isMain } ?: cards.firstOrNull()
+
+    val paymentState by paymentViewModel.container.stateFlow.collectAsState()
+    val transactions by transactionViewModel.transactions.collectAsState()
+
+    val totalPoints = remember(transactions) {
+        transactions.sumOf { it.amount }
+    }
+
+    LaunchedEffect(Unit) {
+        cardViewModel.fetchCards()
+        paymentViewModel.fetchProviders()
+        transactionViewModel.fetchTransactions()
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -43,10 +106,18 @@ fun HomeScreen(navController: NavController, onMenuClick: () -> Unit) {
             contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            item { BalanceCard(navController) }
-            item { PointsAndCashbackRow() }
+            item { BalanceCard(navController, mainCard) }
+            item { PointsAndCashbackRow(totalPoints) }
             item { QuickActionsRow() }
-            item { PaymentsSection() }
+            item { 
+                PaymentsSection(
+                    providers = paymentState.providers,
+                    onProviderClick = { provider ->
+                        val encodedUrl = URLEncoder.encode(provider.logoUrl ?: "", StandardCharsets.UTF_8.toString())
+                        navController.navigate("make_payment/${provider.id}/${provider.name}/$encodedUrl")
+                    }
+                ) 
+            }
             item { ServicesHeader() }
             item { ServicesGrid() }
             item { GeolocationBanner() }
@@ -58,9 +129,13 @@ fun HomeScreen(navController: NavController, onMenuClick: () -> Unit) {
 
 @Composable
 fun DrawerContent(
+    profileViewModel: com.example.presenter.vm.profile.ProfileViewModel = hiltViewModel(),
     onItemClick: (String) -> Unit,
     onLogoutClick: () -> Unit
 ) {
+    val profileState by profileViewModel.container.stateFlow.collectAsState()
+    val userProfile = profileState.userProfile
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -99,38 +174,40 @@ fun DrawerContent(
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                    text = "IKROMBEK OBLOQULOV",
+                    text = userProfile?.fullName?.uppercase(Locale.getDefault()) ?: "ZOOMRAD FOYDALANUVCHISI",
                     color = Color.White,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = "+998950663020",
+                    text = userProfile?.phone ?: "",
                     color = Color.White.copy(alpha = 0.8f),
                     fontSize = 14.sp
                 )
                 Spacer(modifier = Modifier.height(12.dp))
-                Surface(
-                    color = Color(0xFF19B387),
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                if (userProfile?.isKycVerified == true) {
+                    Surface(
+                        color = Color(0xFF19B387),
+                        shape = RoundedCornerShape(12.dp)
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.CheckCircle,
-                            contentDescription = null,
-                            tint = Color.White,
-                            modifier = Modifier.size(16.dp)
-                        )
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(
-                            text = "Tasdiqlangan mijoz",
-                            color = Color.White,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Bold
-                        )
+                        Row(
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.CheckCircle,
+                                contentDescription = null,
+                                tint = Color.White,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = "Tasdiqlangan mijoz",
+                                color = Color.White,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
                     }
                 }
             }
@@ -302,64 +379,71 @@ fun BadgedIconContainer(iconRes: Int, badgeCount: String) {
 }
 
 @Composable
-fun BalanceCard(navController: NavController) {
+fun BalanceCard(navController: NavController, card: CardData?) {
     Card(
         shape = RoundedCornerShape(24.dp),
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { navController.navigate("cards") },
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Box(
             modifier = Modifier
                 .background(
                     brush = Brush.linearGradient(
-                        colors = listOf(
-                            MaterialTheme.colorScheme.secondaryContainer,
-                            MaterialTheme.colorScheme.onSecondaryContainer
-                        )
+                        colors = listOf(Color(0xFF001F1A), Color(0xFF004D40))
                     )
                 )
-                .padding(20.dp)
         ) {
-            Column {
+            card?.backgroundUrl?.let { url ->
+                AsyncImage(
+                    model = url,
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+            }
+            Column(modifier = Modifier.padding(20.dp)) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Jami balans",
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                        text = card?.maskedNumber ?: "Karta biriktirilmagan",
+                        color = Color.White.copy(alpha = 0.7f),
                         fontSize = 14.sp
                     )
                     Icon(
                         painter = painterResource(R.drawable.ic_eye),
                         contentDescription = null,
                         modifier = Modifier.size(20.dp),
-                        tint = MaterialTheme.colorScheme.onSurface
+                        tint = Color.White
                     )
                 }
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "446 885 so'm",
-                    color = MaterialTheme.colorScheme.onSurface,
+                    text = if (card != null) formatAmount(card.balance) else "0 so'm",
+                    color = Color.White,
                     fontSize = 28.sp,
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(20.dp))
-                Button(
-                    onClick = { navController.navigate("cards") },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
-                    ),
-                    shape = RoundedCornerShape(12.dp),
-                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                    modifier = Modifier.height(36.dp)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Kartalarga o'tish >",
-                        color = MaterialTheme.colorScheme.onSurface,
+                        text = card?.holderName ?: "ZOOMRAD",
+                        color = Color.White.copy(alpha = 0.7f),
+                        fontSize = 14.sp
+                    )
+                    Text(
+                        text = card?.type ?: "",
+                        color = Color.White.copy(alpha = 0.7f),
                         fontSize = 14.sp,
-                        fontWeight = FontWeight.Medium
+                        fontWeight = FontWeight.Bold
                     )
                 }
             }
@@ -367,8 +451,12 @@ fun BalanceCard(navController: NavController) {
     }
 }
 
+fun formatAmount(amount: Long): String {
+    return String.format(Locale.getDefault(), "%,d", amount).replace(',', ' ') + " so'm"
+}
+
 @Composable
-fun PointsAndCashbackRow() {
+fun PointsAndCashbackRow(points: Long) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -386,7 +474,7 @@ fun PointsAndCashbackRow() {
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
-                text = "2710.0 ballar",
+                text = "${points.toDouble()} ballar",
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 15.sp,
                 color = MaterialTheme.colorScheme.onSurface
@@ -443,21 +531,38 @@ fun QuickActionCard(title: String, iconRes: Int, modifier: Modifier) {
 }
 
 @Composable
-fun PaymentsSection() {
-    Row(
+fun PaymentsSection(
+    providers: List<PaymentProvider>,
+    onProviderClick: (PaymentProvider) -> Unit
+) {
+    LazyRow(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        PaymentCard("Avtobus va Metro", "To'lov", R.drawable.ic_deposit, Modifier.weight(1f))
-        PaymentCard("Ta'lim", "To'lov", R.drawable.ic_deposit, Modifier.weight(1f))
+        items(providers) { provider ->
+            PaymentCard(
+                title = provider.name,
+                subtitle = "To'lov",
+                logoUrl = provider.logoUrl,
+                modifier = Modifier.width(160.dp),
+                onClick = { onProviderClick(provider) }
+            )
+        }
     }
 }
 
 @Composable
-fun PaymentCard(title: String, subtitle: String, iconRes: Int, modifier: Modifier) {
+fun PaymentCard(
+    title: String,
+    subtitle: String,
+    logoUrl: String?,
+    modifier: Modifier,
+    onClick: () -> Unit
+) {
     Column(
         modifier = modifier
             .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(16.dp))
+            .clickable { onClick() }
             .padding(16.dp)
     ) {
         Text(text = subtitle, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
@@ -465,17 +570,30 @@ fun PaymentCard(title: String, subtitle: String, iconRes: Int, modifier: Modifie
             text = title,
             fontWeight = FontWeight.Bold,
             fontSize = 15.sp,
-            color = MaterialTheme.colorScheme.onSurface
+            color = MaterialTheme.colorScheme.onSurface,
+            maxLines = 1
         )
         Spacer(modifier = Modifier.height(12.dp))
-        Image(
-            painter = painterResource(iconRes),
-            contentDescription = null,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(60.dp),
-            contentScale = ContentScale.Fit
-        )
+        if (logoUrl != null) {
+            AsyncImage(
+                model = logoUrl,
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(60.dp),
+                contentScale = ContentScale.Fit,
+                error = painterResource(R.drawable.ic_deposit)
+            )
+        } else {
+            Image(
+                painter = painterResource(R.drawable.ic_deposit),
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(60.dp),
+                contentScale = ContentScale.Fit
+            )
+        }
     }
 }
 

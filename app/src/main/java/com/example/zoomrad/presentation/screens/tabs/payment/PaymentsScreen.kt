@@ -1,7 +1,20 @@
 package com.example.zoomrad.presentation.screens.tabs.payment
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -9,8 +22,16 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -21,6 +42,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImage
+import com.example.entity.model.payment.PaymentProvider
+import com.example.presenter.vm.payment.PaymentViewModel
+import org.orbitmvi.orbit.compose.collectAsState
 
 
 data class ServiceItemData(
@@ -29,21 +55,15 @@ data class ServiceItemData(
 )
 
 @Composable
-fun PaymentsScreen() {
-    val services = listOf(
-        ServiceItemData("Mobil operatorlar", "Smartphone icon"),
-        ServiceItemData("Internet provayderlar", "Wifi icon"),
-        ServiceItemData("Uy telefoni", "Landline phone icon"),
-        ServiceItemData("Kommunal xizmatlar", "House icon"),
-        ServiceItemData("Transport", "Car icon"),
-        ServiceItemData("Televidenie va onlayn uzatuv", "TV icon"),
-        ServiceItemData("Bank kreditlarini so'ndirish", "Bank icon with arrow"),
-        ServiceItemData("Davlat xizmatlari", "Government building icon"),
-        ServiceItemData("Xayriya", "Heart in hands icon"),
-        ServiceItemData("Internet do'konlar", "Shopping basket icon"),
-        ServiceItemData("E'lonlar va reklama", "List/Ads icon"),
-        ServiceItemData("Xizmatlar", "Checklist icon")
-    )
+fun PaymentsScreen(
+    viewModel: PaymentViewModel = hiltViewModel(),
+    onProviderClick: (PaymentProvider) -> Unit
+) {
+    val state by viewModel.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.fetchProviders()
+    }
 
     Column(
         modifier = Modifier
@@ -75,15 +95,21 @@ fun PaymentsScreen() {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(3),
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(bottom = 16.dp)
-        ) {
-            items(services) { service ->
-                ServiceGridCard(service)
+        if (state.isLoading) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+            }
+        } else {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(3),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(bottom = 16.dp)
+            ) {
+                items(state.providers) { provider ->
+                    ServiceGridCard(provider, onClick = { onProviderClick(provider) })
+                }
             }
         }
     }
@@ -122,7 +148,7 @@ fun PaymentsSearchBar() {
 }
 
 @Composable
-fun ServiceGridCard(service: ServiceItemData) {
+fun ServiceGridCard(provider: PaymentProvider, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .aspectRatio(0.9f)
@@ -132,7 +158,8 @@ fun ServiceGridCard(service: ServiceItemData) {
                 clip = false,
                 ambientColor = Color.Black.copy(alpha = 0.1f),
                 spotColor = Color.Black.copy(alpha = 0.1f)
-            ),
+            )
+            .clickable { onClick() },
         shape = RoundedCornerShape(18.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
@@ -157,17 +184,17 @@ fun ServiceGridCard(service: ServiceItemData) {
                     ),
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = "Icon",
-                    color = Color.White,
-                    fontSize = 10.sp
+                AsyncImage(
+                    model = provider.logoUrl,
+                    contentDescription = provider.name,
+                    modifier = Modifier.size(32.dp)
                 )
             }
 
             Spacer(modifier = Modifier.height(10.dp))
 
             Text(
-                text = service.title,
+                text = provider.name,
                 fontSize = 11.sp,
                 lineHeight = 13.sp,
                 fontWeight = FontWeight.Medium,
@@ -182,5 +209,5 @@ fun ServiceGridCard(service: ServiceItemData) {
 @Preview(showBackground = true)
 @Composable
 fun PaymentsScreenPreview() {
-    PaymentsScreen()
+    PaymentsScreen(onProviderClick = {})
 }

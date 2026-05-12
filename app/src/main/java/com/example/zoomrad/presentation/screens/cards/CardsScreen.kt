@@ -3,7 +3,18 @@ package com.example.zoomrad.presentation.screens.cards
 import android.widget.Toast
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -15,8 +26,34 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -24,6 +61,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -33,9 +71,10 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
 import com.example.presenter.vm.cards.CardViewModel
 import com.example.zoomrad.ui.theme.GreenPrimary
-import com.example.zoomrad.ui.theme.QuoteReminderTheme
+import com.example.zoomrad.ui.theme.ZoomradTheme
 import java.util.Locale
 
 data class CardData(
@@ -49,7 +88,8 @@ data class CardData(
     val currency: String,
     val cardType: String,
     val cardTypeLogo: ImageVector = Icons.Default.Info,
-    val gradientColors: List<Color> = listOf(Color(0xFF004D40), Color(0xFF00796B))
+    val gradientColors: List<Color> = listOf(Color(0xFF004D40), Color(0xFF00796B)),
+    val backgroundUrl: String? = null
 )
 
 data class AddCardOption(
@@ -130,6 +170,7 @@ fun CardsScreen(
             balance = String.format(Locale.getDefault(), "%,d", apiCard.balance).replace(',', ' '),
             currency = apiCard.currency,
             cardType = apiCard.type,
+            backgroundUrl = apiCard.backgroundUrl,
             gradientColors = if (apiCard.type == "HUMO")
                 listOf(Color(0xFF0D47A1), Color(0xFF1976D2))
             else
@@ -263,6 +304,14 @@ fun BankCardItem(card: CardData) {
                 .fillMaxSize()
                 .background(Brush.linearGradient(card.gradientColors))
         ) {
+            card.backgroundUrl?.let { url ->
+                AsyncImage(
+                    model = url,
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+            }
             Canvas(modifier = Modifier.fillMaxSize()) {
                 val strokeWidth = 1.dp.toPx()
                 val spacing = 15.dp.toPx()
@@ -459,9 +508,30 @@ fun AddCardItem(option: AddCardOption, onClick: () -> Unit) {
 
 @Preview(showBackground = true)
 @Composable
+fun BankCardItemPreview() {
+    ZoomradTheme {
+
+        BankCardItem(
+            card = CardData(
+                id = "1",
+                bankName = "Test Bank",
+                isPrimary = true,
+                cardNumber = "8600 **** **** 1234",
+                cardHolderName = "JOHN DOE",
+                balance = "1 000 000",
+                currency = "UZS",
+                cardType = "UZCARD",
+                backgroundUrl = "https://example.com/card_bg.png"
+            )
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
 fun CardsScreenPreview() {
     val navController = rememberNavController()
-    QuoteReminderTheme(darkTheme = true) {
+    ZoomradTheme(darkTheme = true) {
         CardsScreen(navController)
     }
 }
@@ -470,7 +540,7 @@ fun CardsScreenPreview() {
 @Composable
 fun LightCardsScreenPreview() {
     val navController = rememberNavController()
-    QuoteReminderTheme(darkTheme = false) {
+    ZoomradTheme(darkTheme = false) {
         CardsScreen(navController)
     }
 }

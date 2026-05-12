@@ -68,6 +68,7 @@ dependencies {
     implementation(libs.retrofit.gson)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.work.runtime)
+    implementation(libs.coil.compose)
 
     implementation(libs.orbit.core)
     implementation(libs.orbit.viewmodel)

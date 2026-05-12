@@ -3,6 +3,7 @@ package com.example.presenter.vm.auth
 import androidx.lifecycle.ViewModel
 import com.example.usecase.RefreshTokenUseCase
 import com.example.usecase.SendOtpUseCase
+import com.example.usecase.SetPinUseCase
 import com.example.usecase.VerifyOtpUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import org.orbitmvi.orbit.ContainerHost
@@ -13,7 +14,8 @@ import javax.inject.Inject
 class AuthViewModel @Inject constructor(
     private val sendOtpUseCase: SendOtpUseCase,
     private val verifyOtpUseCase: VerifyOtpUseCase,
-    private val refreshTokenUseCase: RefreshTokenUseCase
+    private val refreshTokenUseCase: RefreshTokenUseCase,
+    private val setPinUseCase: SetPinUseCase
 ) : ContainerHost<AuthViewModel.AuthState, AuthViewModel.AuthSideEffect>, ViewModel() {
 
     override val container = container<AuthState, AuthSideEffect>(AuthState())
@@ -73,6 +75,18 @@ class AuthViewModel @Inject constructor(
         }
     }
 
+    fun setPin(pin: String) = intent {
+        reduce { state.copy(isLoading = true) }
+        val result = setPinUseCase(pin)
+        reduce { state.copy(isLoading = false) }
+
+        result.onSuccess {
+            postSideEffect(AuthSideEffect.SetPinSuccess)
+        }.onFailure {
+            postSideEffect(AuthSideEffect.ShowToast(it.message ?: "PIN set failed"))
+        }
+    }
+
     data class AuthState(
         val phoneNumber: String = "+998",
         val otp: String = "",
@@ -83,5 +97,6 @@ class AuthViewModel @Inject constructor(
         data class ShowToast(val message: String) : AuthSideEffect()
         object NavigateToOtp : AuthSideEffect()
         object NavigateToHome : AuthSideEffect()
+        object SetPinSuccess : AuthSideEffect()
     }
 }

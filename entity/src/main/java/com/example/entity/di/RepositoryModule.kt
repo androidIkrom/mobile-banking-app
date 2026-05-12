@@ -6,6 +6,12 @@ import com.example.entity.repository.card.CardRepository
 import com.example.entity.repository.card.CardRepositoryImpl
 import com.example.entity.repository.intercepter.InterceptorRepository
 import com.example.entity.repository.intercepter.InterceptorRepositoryImpl
+import com.example.entity.repository.loan.LoanRepository
+import com.example.entity.repository.loan.LoanRepositoryImpl
+import com.example.entity.repository.payment.PaymentRepository
+import com.example.entity.repository.payment.PaymentRepositoryImpl
+import com.example.entity.repository.transfer.TransferRepository
+import com.example.entity.repository.transfer.TransferRepositoryImpl
 import com.example.entity.repository.user.UserRepository
 import com.example.entity.repository.user.UserRepositoryImpl
 import dagger.Binds
@@ -28,4 +34,13 @@ internal interface RepositoryModule {
 
     @Binds
     fun bindUserRepository(userRepositoryImpl: UserRepositoryImpl): UserRepository
+
+    @Binds
+    fun bindTransferRepository(transferRepositoryImpl: TransferRepositoryImpl): TransferRepository
+
+    @Binds
+    fun bindPaymentRepository(paymentRepositoryImpl: PaymentRepositoryImpl): PaymentRepository
+
+    @Binds
+    fun bindLoanRepository(loanRepositoryImpl: LoanRepositoryImpl): LoanRepository
 }
