@@ -28,7 +28,7 @@ class TransferViewModel @Inject constructor(
         val phoneNumber: String = "",
         val fromCardId: String = "",
         val toCardNumber: String = "",
-        val amount: Long = 0
+        val amount: Double = 0.0
     )
 
     sealed class TransferSideEffect {
@@ -38,7 +38,7 @@ class TransferViewModel @Inject constructor(
         object NavigateToPinConfirm : TransferSideEffect()
     }
 
-    fun setDraft(fromCardId: String, toCardNumber: String, amount: Long) = intent {
+    fun setDraft(fromCardId: String, toCardNumber: String, amount: Double) = intent {
         reduce {
             state.copy(
                 fromCardId = fromCardId,
@@ -77,7 +77,7 @@ class TransferViewModel @Inject constructor(
     fun initiateTransfer(
         fromCardId: String,
         toCardNumber: String,
-        amount: Long,
+        amount: Double,
         pin: String,
         description: String,
         isPinMethod: Boolean = false

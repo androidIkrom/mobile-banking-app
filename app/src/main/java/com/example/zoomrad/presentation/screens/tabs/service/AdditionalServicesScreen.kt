@@ -1,16 +1,35 @@
 package com.example.zoomrad.presentation.screens.tabs.service
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -20,52 +39,59 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.example.entity.model.loan.LoanData
 import com.example.presenter.vm.loan.LoanViewModel
-import com.example.zoomrad.R
+import com.example.zoomrad.presentation.navigation.BottomNavItem
 import com.example.zoomrad.presentation.screens.tabs.home.formatAmount
 import java.util.Locale
 
 data class AdditionalServiceItemData(
     val title: String,
-    val iconDescription: String
+    val iconDescription: String,
+    val route: String? = null,
+    val icon: ImageVector = Icons.Default.Search
+)
+
+val allServices = listOf(
+    AdditionalServiceItemData("Onlayn to'lov Alipay+", "Alipay+ logo icon"),
+    AdditionalServiceItemData("Kids Card", "Child face icon"),
+    AdditionalServiceItemData("Jamg'arma", "Treasure box icon"),
+    AdditionalServiceItemData("Mastercard MoneySend", "Mastercard logo"),
+    AdditionalServiceItemData("Investitsiya", "Growth chart icon"),
+    AdditionalServiceItemData("Sayohat sug'urtasi", "Airplane icon"),
+    AdditionalServiceItemData("Identifikatsiya", "User identity scan icon"),
+    AdditionalServiceItemData("Kredit olish", "Loan icon", "apply_loan"),
+    AdditionalServiceItemData("Kartalarim", "Credit cards icon", "cards"),
+    AdditionalServiceItemData("Monitoring", "Clock history icon", BottomNavItem.Monitoring.route),
+    AdditionalServiceItemData("To'lovlar", "Wallet icon", BottomNavItem.Tolovlar.route),
+    AdditionalServiceItemData("O'tkazma", "Money transfer logout icon", BottomNavItem.Otkazma.route),
+    AdditionalServiceItemData("Mening uyim", "House icon"),
+    AdditionalServiceItemData("Mening avtomobilim", "Car icon"),
+    AdditionalServiceItemData("Face Pay", "Face recognition scan icon"),
+    AdditionalServiceItemData("Visa Direct", "Visa logo icon")
 )
 
 @Composable
 fun AdditionalServicesScreen(
+    navController: NavController,
     viewModel: LoanViewModel = hiltViewModel()
 ) {
     val state by viewModel.container.stateFlow.collectAsState()
 
-    val services = listOf(
-        AdditionalServiceItemData("Onlayn to'lov Alipay+", "Alipay+ logo icon"),
-        AdditionalServiceItemData("Kids Card", "Child face icon"),
-        AdditionalServiceItemData("Jamg'arma", "Treasure box icon"),
-        AdditionalServiceItemData("Mastercard MoneySend", "Mastercard logo"),
-        AdditionalServiceItemData("Investitsiya", "Growth chart icon"),
-        AdditionalServiceItemData("Sayohat sug'urtasi", "Airplane icon"),
-        AdditionalServiceItemData("Identifikatsiya", "User identity scan icon"),
-        AdditionalServiceItemData("Kartalarim", "Credit cards icon"),
-        AdditionalServiceItemData("Monitoring", "Clock history icon"),
-        AdditionalServiceItemData("To'lovlar", "Wallet icon"),
-        AdditionalServiceItemData("O'tkazma", "Money transfer logout icon"),
-        AdditionalServiceItemData("Mening uyim", "House icon"),
-        AdditionalServiceItemData("Mening avtomobilim", "Car icon"),
-        AdditionalServiceItemData("Face Pay", "Face recognition scan icon"),
-        AdditionalServiceItemData("Visa Direct", "Visa logo icon")
-    )
+    val services = allServices.sortedByDescending { it.route != null }
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
             .padding(horizontal = 16.dp)
+            .verticalScroll(rememberScrollState())
     ) {
         Spacer(modifier = Modifier.height(20.dp))
 
@@ -103,7 +129,9 @@ fun AdditionalServicesScreen(
                 modifier = Modifier.padding(bottom = 12.dp)
             )
             state.loans.forEach { loan ->
-                LoanCard(loan)
+                LoanCard(loan, onRepayClick = {
+                    navController.navigate("repay_loan/${loan.id}/${loan.monthlyPayment}")
+                })
                 Spacer(modifier = Modifier.height(10.dp))
             }
             Spacer(modifier = Modifier.height(14.dp))
@@ -116,22 +144,23 @@ fun AdditionalServicesScreen(
             modifier = Modifier.padding(bottom = 12.dp)
         )
 
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(3),
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(bottom = 16.dp)
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            items(services) { service ->
-                AdditionalServiceGridCard(service)
+            services.forEach { service ->
+                AdditionalServiceListCard(service) {
+                    service.route?.let { navController.navigate(it) }
+                }
             }
         }
     }
 }
 
 @Composable
-fun LoanCard(loan: LoanData) {
+fun LoanCard(loan: LoanData, onRepayClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -185,7 +214,7 @@ fun LoanCard(loan: LoanData) {
             }
             Spacer(modifier = Modifier.height(12.dp))
             LinearProgressIndicator(
-                progress = { (loan.totalAmount - loan.remaining).toFloat() / loan.totalAmount },
+                progress = { (loan.totalAmount - loan.remaining).toFloat() / loan.totalAmount.toFloat() },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(8.dp)
@@ -193,21 +222,14 @@ fun LoanCard(loan: LoanData) {
                 color = MaterialTheme.colorScheme.primary,
                 trackColor = MaterialTheme.colorScheme.primaryContainer
             )
-            Spacer(modifier = Modifier.height(8.dp))
-            Row(
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(
+                onClick = onRepayClick,
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                shape = RoundedCornerShape(10.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
             ) {
-                Text(
-                    text = "Jami: ${formatAmount(loan.totalAmount)}",
-                    fontSize = 11.sp,
-                    color = Color.Gray
-                )
-                Text(
-                    text = "${loan.termMonths} oy",
-                    fontSize = 11.sp,
-                    color = Color.Gray
-                )
+                Text("To'lash", fontWeight = FontWeight.Bold)
             }
         }
     }
@@ -247,55 +269,70 @@ fun AdditionalServicesSearchBar() {
 }
 
 @Composable
-fun AdditionalServiceGridCard(service: AdditionalServiceItemData) {
+fun AdditionalServiceListCard(service: AdditionalServiceItemData, onClick: () -> Unit) {
     Card(
         modifier = Modifier
-            .aspectRatio(0.85f)
-            .shadow(
-                elevation = 4.dp,
-                shape = RoundedCornerShape(18.dp),
-                clip = false
-            ),
+            .fillMaxWidth()
+            .height(72.dp)
+            .clickable { onClick() },
         shape = RoundedCornerShape(18.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+        colors = CardDefaults.cardColors(
+            containerColor = if (MaterialTheme.colorScheme.background == Color(0xFFF7F9F8))
+                Color.White
+            else
+                Color(0xFF2D3843)
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.5.dp)
     ) {
-        Column(
+        Row(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+                .padding(horizontal = 12.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
                 modifier = Modifier
-                    .size(52.dp)
+                    .size(48.dp)
                     .background(
                         brush = Brush.verticalGradient(
-                            colors = listOf(MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),MaterialTheme.colorScheme.primary)
+                            colors = listOf(Color(0xFF33B585), Color(0xFF2E7D32))
                         ),
                         shape = CircleShape
                     ),
                 contentAlignment = Alignment.Center
             ) {
-
-                Text(
-                    text = "Icon",
-                    color = Color.White,
-                    fontSize = 10.sp
+                Icon(
+                    imageVector = service.icon,
+                    contentDescription = null,
+                    tint = Color.White,
+                    modifier = Modifier.size(24.dp)
                 )
             }
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.width(16.dp))
 
             Text(
                 text = service.title,
-                fontSize = 11.sp,
-                lineHeight = 13.sp,
+                fontSize = 16.sp,
                 fontWeight = FontWeight.Medium,
                 color = MaterialTheme.colorScheme.onSurface,
-                textAlign = TextAlign.Center,
-                maxLines = 2
+                modifier = Modifier.weight(1f)
             )
+
+            Surface(
+                modifier = Modifier.size(32.dp),
+                shape = CircleShape,
+                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                        contentDescription = "Navigate",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+            }
         }
     }
 }
@@ -304,5 +341,6 @@ fun AdditionalServiceGridCard(service: AdditionalServiceItemData) {
 @Preview(showBackground = true)
 @Composable
 fun AdditionalServicesScreenPreview() {
-    AdditionalServicesScreen()
+    val navController = androidx.navigation.compose.rememberNavController()
+    AdditionalServicesScreen(navController)
 }

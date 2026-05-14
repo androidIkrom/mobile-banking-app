@@ -47,6 +47,7 @@ fun LoginScreen(
             is AuthViewModel.AuthSideEffect.ShowToast -> {
                 Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
             }
+
             is AuthViewModel.AuthSideEffect.NavigateToOtp -> {
                 onLoginSuccess()
                 Toast.makeText(context, "Navigating to OTP", Toast.LENGTH_SHORT).show()
@@ -55,6 +56,7 @@ fun LoginScreen(
             AuthViewModel.AuthSideEffect.NavigateToHome -> {
 
             }
+
             else -> {}
         }
     }

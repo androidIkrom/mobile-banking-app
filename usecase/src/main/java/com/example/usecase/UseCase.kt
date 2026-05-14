@@ -2,7 +2,9 @@ package com.example.usecase
 
 import com.example.entity.model.auth.AuthData
 import com.example.entity.model.card.CardData
+import com.example.entity.model.loan.ApplyLoanRequest
 import com.example.entity.model.loan.LoanData
+import com.example.entity.model.loan.RepayLoanRequest
 import com.example.entity.model.payment.PaymentProvider
 import com.example.entity.model.payment.PaymentRequest
 import com.example.entity.model.transaction.TransactionData
@@ -90,4 +92,12 @@ interface MakePaymentUseCase {
 
 interface GetLoansUseCase {
     suspend operator fun invoke(): Result<List<LoanData>>
+}
+
+interface ApplyLoanUseCase {
+    suspend operator fun invoke(request: ApplyLoanRequest): Result<LoanData>
+}
+
+interface RepayLoanUseCase {
+    suspend operator fun invoke(id: String, request: RepayLoanRequest): Result<LoanData>
 }

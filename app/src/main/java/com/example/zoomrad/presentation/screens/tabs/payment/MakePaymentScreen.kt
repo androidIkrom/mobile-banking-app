@@ -273,7 +273,7 @@ fun MiniCardItem(
             )
             Column {
                 Text(
-                    text = String.format(Locale.getDefault(), "%,d", card.balance).replace(',', ' ') + " " + card.currency,
+                    text = String.format(Locale.getDefault(), "%,d", card.balance.toLong()).replace(',', ' ') + " " + card.currency,
                     color = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurface,
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Bold

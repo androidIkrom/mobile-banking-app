@@ -22,6 +22,8 @@ import com.example.zoomrad.presentation.screens.profile.ProfileScreen
 import com.example.zoomrad.presentation.screens.settings.SettingsScreen
 import com.example.zoomrad.presentation.screens.splash.SplashScreen
 import com.example.zoomrad.presentation.screens.tabs.home.HomeScreen
+import com.example.zoomrad.presentation.screens.tabs.loan.ApplyLoanScreen
+import com.example.zoomrad.presentation.screens.tabs.loan.RepayLoanScreen
 import com.example.zoomrad.presentation.screens.tabs.monitor.MonitoringScreen
 import com.example.zoomrad.presentation.screens.tabs.payment.MakePaymentScreen
 import com.example.zoomrad.presentation.screens.tabs.payment.PaymentReceiptScreen
@@ -170,7 +172,23 @@ class HomeNavigation(
             )
         }
         builder.composable(BottomNavItem.Monitoring.route) { MonitoringScreen() }
-        builder.composable(BottomNavItem.Xizmatlar.route) { AdditionalServicesScreen() }
+        builder.composable(BottomNavItem.Xizmatlar.route) { 
+            AdditionalServicesScreen(navController) 
+        }
+        builder.composable("apply_loan") {
+            ApplyLoanScreen(navController)
+        }
+        builder.composable(
+            route = "repay_loan/{loanId}/{monthlyPayment}",
+            arguments = listOf(
+                navArgument("loanId") { type = NavType.StringType },
+                navArgument("monthlyPayment") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val loanId = backStackEntry.arguments?.getString("loanId") ?: ""
+            val monthlyPayment = backStackEntry.arguments?.getString("monthlyPayment")?.toDoubleOrNull() ?: 0.0
+            RepayLoanScreen(navController, loanId, monthlyPayment)
+        }
         builder.composable("cards") { CardsScreen(navController) }
         builder.composable("transfer_otp") {
             TransferOtpScreen(

@@ -5,7 +5,7 @@ data class CardData(
     val maskedNumber: String,
     val holderName: String,
     val expiry: String,
-    val balance: Long,
+    val balance: Double,
     val currency: String,
     val isMain: Boolean,
     val isBlocked: Boolean,

@@ -138,7 +138,7 @@ fun PaymentReceiptScreen(
                     HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
 
                     ReceiptRow("Hisob:", account)
-                    ReceiptRow("To'lov summasi:", formatAmount(amount.toLongOrNull() ?: 0))
+                    ReceiptRow("To'lov summasi:", formatAmount(amount.toDoubleOrNull() ?: 0.0))
                     
                     HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
 
@@ -193,6 +193,6 @@ fun ReceiptRow(label: String, value: String) {
     }
 }
 
-private fun formatAmount(amount: Long): String {
-    return String.format(Locale.getDefault(), "%,d", amount).replace(',', ' ') + " so'm"
+private fun formatAmount(amount: Double): String {
+    return String.format(Locale.getDefault(), "%,.2f", amount).replace(',', ' ') + " so'm"
 }

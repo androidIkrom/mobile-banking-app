@@ -48,10 +48,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -65,6 +67,8 @@ import com.example.presenter.vm.cards.CardViewModel
 import com.example.presenter.vm.payment.PaymentViewModel
 import com.example.presenter.vm.transaction.TransactionViewModel
 import com.example.zoomrad.R
+import com.example.zoomrad.presentation.screens.tabs.service.AdditionalServiceItemData
+import com.example.zoomrad.presentation.screens.tabs.service.allServices
 import com.example.zoomrad.ui.theme.GreenPrimary
 import com.example.zoomrad.ui.theme.NotificationRed
 import java.net.URLEncoder
@@ -109,17 +113,27 @@ fun HomeScreen(
             item { BalanceCard(navController, mainCard) }
             item { PointsAndCashbackRow(totalPoints) }
             item { QuickActionsRow() }
-            item { 
+            item {
                 PaymentsSection(
                     providers = paymentState.providers,
                     onProviderClick = { provider ->
-                        val encodedUrl = URLEncoder.encode(provider.logoUrl ?: "", StandardCharsets.UTF_8.toString())
+                        val encodedUrl = URLEncoder.encode(
+                            provider.logoUrl ?: "",
+                            StandardCharsets.UTF_8.toString()
+                        )
                         navController.navigate("make_payment/${provider.id}/${provider.name}/$encodedUrl")
                     }
-                ) 
+                )
             }
             item { ServicesHeader() }
-            item { ServicesGrid() }
+            item {
+                ServicesLazyRow(
+                    services = allServices,
+                    onServiceClick = { service ->
+                        service.route?.let { navController.navigate(it) }
+                    }
+                )
+            }
             item { GeolocationBanner() }
             item { CurrencyRatesSection() }
         }
@@ -174,7 +188,8 @@ fun DrawerContent(
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                    text = userProfile?.fullName?.uppercase(Locale.getDefault()) ?: "ZOOMRAD FOYDALANUVCHISI",
+                    text = userProfile?.fullName?.uppercase(Locale.getDefault())
+                        ?: "ZOOMRAD FOYDALANUVCHISI",
                     color = Color.White,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
@@ -366,12 +381,12 @@ fun BadgedIconContainer(iconRes: Int, badgeCount: String) {
             modifier = Modifier
                 .offset(x = 4.dp, y = (-4).dp)
                 .background(NotificationRed, CircleShape)
-                .padding(horizontal = 4.dp, vertical = 1.dp)
+                .padding(horizontal = 4.dp, vertical = 0.dp)
         ) {
             Text(
                 text = badgeCount,
                 color = Color.White,
-                fontSize = 10.sp,
+                fontSize = 8.sp,
                 fontWeight = FontWeight.Bold
             )
         }
@@ -451,12 +466,16 @@ fun BalanceCard(navController: NavController, card: CardData?) {
     }
 }
 
-fun formatAmount(amount: Long): String {
-    return String.format(Locale.getDefault(), "%,d", amount).replace(',', ' ') + " so'm"
+fun formatAmount(amount: Double): String {
+    return formatMoney(amount) + " so'm"
+}
+
+fun formatMoney(amount: Double): String {
+    return String.format(Locale.getDefault(), "%,.2f", amount).replace(',', ' ')
 }
 
 @Composable
-fun PointsAndCashbackRow(points: Long) {
+fun PointsAndCashbackRow(points: Double) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -574,26 +593,18 @@ fun PaymentCard(
             maxLines = 1
         )
         Spacer(modifier = Modifier.height(12.dp))
-        if (logoUrl != null) {
-            AsyncImage(
-                model = logoUrl,
-                contentDescription = null,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(60.dp),
-                contentScale = ContentScale.Fit,
-                error = painterResource(R.drawable.ic_deposit)
-            )
-        } else {
-            Image(
-                painter = painterResource(R.drawable.ic_deposit),
-                contentDescription = null,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(60.dp),
-                contentScale = ContentScale.Fit
-            )
-        }
+        AsyncImage(
+            model = logoUrl,
+            contentDescription = null,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(60.dp),
+            contentScale = ContentScale.Fit,
+            error = painterResource(R.drawable.ic_deposit),
+            placeholder = painterResource(R.drawable.ic_deposit),
+            fallback = painterResource(R.drawable.ic_deposit),
+            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
+        )
     }
 }
 
@@ -621,22 +632,30 @@ fun ServicesHeader() {
 }
 
 @Composable
-fun ServicesGrid() {
-    Row(
+fun ServicesLazyRow(
+    services: List<AdditionalServiceItemData>,
+    onServiceClick: (AdditionalServiceItemData) -> Unit
+) {
+    LazyRow(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        ServiceItem("Mening uyim", R.drawable.ic_deposit, Modifier.weight(1f))
-        ServiceItem("Mening avtomobilim", R.drawable.ic_deposit, Modifier.weight(1f))
-        ServiceItem("Davlat xizmatlari", R.drawable.ic_deposit, Modifier.weight(1f))
+        items(services) { service ->
+            ServiceCard(
+                title = service.title,
+                modifier = Modifier.width(140.dp),
+                onClick = { onServiceClick(service) }
+            )
+        }
     }
 }
 
 @Composable
-fun ServiceItem(title: String, imageRes: Int, modifier: Modifier) {
+fun ServiceCard(title: String, modifier: Modifier, onClick: () -> Unit) {
     Column(
         modifier = modifier
             .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(16.dp))
+            .clickable { onClick() }
             .padding(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -646,12 +665,14 @@ fun ServiceItem(title: String, imageRes: Int, modifier: Modifier) {
             fontWeight = FontWeight.Medium,
             minLines = 2,
             lineHeight = 14.sp,
-            color = MaterialTheme.colorScheme.onSurface
+            color = MaterialTheme.colorScheme.onSurface,
+            textAlign = TextAlign.Center
         )
         Spacer(modifier = Modifier.height(12.dp))
         Image(
-            painter = painterResource(imageRes),
+            painter = painterResource(R.drawable.ic_deposit),
             contentDescription = null,
+            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
             modifier = Modifier.size(50.dp)
         )
     }
@@ -693,6 +714,7 @@ fun GeolocationBanner() {
             }
             Image(
                 painter = painterResource(R.drawable.ic_deposit),
+                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
                 contentDescription = null,
                 modifier = Modifier.size(70.dp)
             )
@@ -726,7 +748,6 @@ fun CurrencyRatesSection() {
         }
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Header
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Text(
                 "Valyuta",

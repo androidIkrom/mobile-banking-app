@@ -1,6 +1,7 @@
 package com.example.usecase.di
 
 import com.example.entity.repository.payment.PaymentRepositoryImpl
+import com.example.usecase.ApplyLoanUseCase
 import com.example.usecase.AttachCardUseCase
 import com.example.usecase.CheckCardUseCase
 import com.example.usecase.ClearLogsUseCase
@@ -15,6 +16,7 @@ import com.example.usecase.GetTransactionsUseCase
 import com.example.usecase.InitiateTransferUseCase
 import com.example.usecase.MakePaymentUseCase
 import com.example.usecase.RefreshTokenUseCase
+import com.example.usecase.RepayLoanUseCase
 import com.example.usecase.SendOtpUseCase
 import com.example.usecase.SetPinUseCase
 import com.example.usecase.UpdateProfileUseCase
@@ -23,7 +25,9 @@ import com.example.usecase.impl.auth.RefreshTokenUseCaseImpl
 import com.example.usecase.impl.auth.SendOtpUseCaseImpl
 import com.example.usecase.impl.auth.SetPinUseCaseImpl
 import com.example.usecase.impl.auth.VerifyOtpUseCaseImpl
+import com.example.usecase.impl.loan.ApplyLoanUseCaseImpl
 import com.example.usecase.impl.loan.GetLoansUseCaseImpl
+import com.example.usecase.impl.loan.RepayLoanUseCaseImpl
 import com.example.usecase.impl.cards.AttachCardUseCaseImpl
 import com.example.usecase.impl.cards.GetCardsUseCaseImpl
 import com.example.usecase.impl.chucker.ClearLogsUseCaseImpl
@@ -113,4 +117,15 @@ internal interface UseCaseModule {
     fun bindGetLoansUseCase(
         impl: GetLoansUseCaseImpl
     ): GetLoansUseCase
+
+    @Binds
+    fun bindApplyLoanUseCase(
+        impl: ApplyLoanUseCaseImpl
+    ): ApplyLoanUseCase
+
+    @Binds
+    fun bindRepayLoanUseCase(
+        impl: RepayLoanUseCaseImpl
+    ): RepayLoanUseCase
 }
+

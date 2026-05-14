@@ -167,7 +167,7 @@ fun CardsScreen(
             isPrimary = apiCard.isMain,
             cardNumber = apiCard.maskedNumber,
             cardHolderName = apiCard.holderName,
-            balance = String.format(Locale.getDefault(), "%,d", apiCard.balance).replace(',', ' '),
+            balance = String.format(Locale.getDefault(), "%,d", apiCard.balance.toLong()).replace(',', ' '),
             currency = apiCard.currency,
             cardType = apiCard.type,
             backgroundUrl = apiCard.backgroundUrl,

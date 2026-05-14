@@ -1,11 +1,12 @@
 package com.example.entity.model.transfer
 
 import com.example.entity.model.auth.ApiError
+import com.example.entity.model.auth.ApiResponse
 
 data class InitiateTransferRequest(
     val fromCardId : String,
     val toCardNumber : String,
-    val amount : Long,
+    val amount : Double,
     val pin : String,
     val description : String
 )
@@ -17,10 +18,10 @@ data class TransferResponseData(
 )
 
 data class TransferResponse(
-    val success : Boolean,
+    override val success : Boolean,
     val data  :  TransferResponseData?,
-    val error : ApiError?
-)
+    override val error : ApiError?
+) : ApiResponse
 
 
 data class ConfirmPinRequest(
@@ -36,11 +37,11 @@ data class ConfirmOtpRequest(
 data class ConfirmTransferResponseData(
     val transactionId : String,
     val status : String,
-    val amount: Long
+    val amount: Double
 )
 
 data class ConfirmTransferResponse(
-    val success : Boolean,
+    override val success : Boolean,
     val data  : ConfirmTransferResponseData?,
-    val error : ApiError?
-)
+    override val error : ApiError?
+) : ApiResponse

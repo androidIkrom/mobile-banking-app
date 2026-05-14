@@ -2,6 +2,7 @@ package com.example.zoomrad.presentation.screens.tabs.transfer
 
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,12 +22,14 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -38,7 +41,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -49,6 +53,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
+import com.example.entity.model.card.CardData
 import com.example.presenter.vm.cards.CardViewModel
 import com.example.presenter.vm.profile.ProfileViewModel
 import com.example.presenter.vm.transfer.TransferViewModel
@@ -56,6 +61,7 @@ import com.example.zoomrad.ui.theme.ZoomradTheme
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TransferScreen(
     navController: androidx.navigation.NavController,
@@ -67,6 +73,7 @@ fun TransferScreen(
     val context = LocalContext.current
     val cards by cardViewModel.cards.collectAsState()
     val profileState by profileViewModel.collectAsState()
+
     transferViewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
             is TransferViewModel.TransferSideEffect.ShowSuccess -> {
@@ -89,7 +96,16 @@ fun TransferScreen(
     LaunchedEffect(Unit) {
         cardViewModel.fetchCards()
     }
-    val selectedCard = cards.find { it.isMain } ?: cards.firstOrNull()
+
+    var showCardSheet by remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState()
+    var selectedCard by remember { mutableStateOf<CardData?>(null) }
+
+    LaunchedEffect(cards) {
+        if (selectedCard == null && cards.isNotEmpty()) {
+            selectedCard = cards.find { it.isMain } ?: cards.firstOrNull()
+        }
+    }
     var cardNumber by remember { mutableStateOf("") }
     var amount by remember { mutableStateOf("") }
 
@@ -219,7 +235,9 @@ fun TransferScreen(
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(160.dp), shape = RoundedCornerShape(24.dp)
+                .height(160.dp)
+                .clickable { showCardSheet = true },
+            shape = RoundedCornerShape(24.dp)
         ) {
             Box(
                 modifier = Modifier
@@ -318,7 +336,7 @@ fun TransferScreen(
                             Spacer(modifier = Modifier.height(4.dp))
                             Row(verticalAlignment = Alignment.Bottom) {
                                 Text(
-                                    text = selectedCard?.balance.toString(),
+                                    text = formatAmount(selectedCard?.balance ?: 0.0),
                                     color = Color.White,
                                     fontSize = 18.sp,
                                     fontWeight = FontWeight.Bold
@@ -356,7 +374,7 @@ fun TransferScreen(
                         Toast.LENGTH_SHORT
                     )
                         .show()
-                } else if (amount.isEmpty() || amount.toLong() < 5000) {
+                } else if (amount.isEmpty() || amount.toDouble() < 5000) {
                     Toast.makeText(
                         context,
                         "Summani 5000 yoki balandroq kiritishingiz kerak",
@@ -367,9 +385,9 @@ fun TransferScreen(
                     if (userPhone != "") {
                         transferViewModel.setPhone(userPhone)
                         transferViewModel.setDraft(
-                            fromCardId = selectedCard.id,
+                            fromCardId = selectedCard?.id ?: "",
                             toCardNumber = cardNumber,
-                            amount = amount.toLong()
+                            amount = amount.toDouble()
                         )
                         navController.navigate("check_transfer")
                     } else {
@@ -409,6 +427,23 @@ fun TransferScreen(
         )
 
         Spacer(modifier = Modifier.height(16.dp))
+    }
+
+    if (showCardSheet) {
+        CardSelectionBottomSheet(
+            cards = cards,
+            selectedCard = selectedCard,
+            onCardSelected = {
+                selectedCard = it
+                showCardSheet = false
+            },
+            onDismissRequest = { showCardSheet = false },
+            sheetState = sheetState,
+            onAddCardClick = {
+                showCardSheet = false
+                navController.navigate("cards") // Navigate to cards screen to add a card
+            }
+        )
     }
 }
 

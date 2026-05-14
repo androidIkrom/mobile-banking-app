@@ -3,8 +3,8 @@ package com.example.entity.network.auth
 import com.example.entity.model.auth.AuthData
 import com.example.entity.model.auth.BaseResponse
 import com.example.entity.model.auth.RefreshTokenRequest
-import com.example.entity.model.auth.SetPinRequest
 import com.example.entity.model.auth.SendOtpRequest
+import com.example.entity.model.auth.SetPinRequest
 import com.example.entity.model.auth.VerifyOtpRequest
 import retrofit2.Response
 import retrofit2.http.Body
@@ -15,7 +15,7 @@ interface AuthApiService {
     @POST("/api/v1/auth/send-otp")
     suspend fun sendOtp(
         @Body request: SendOtpRequest
-    ): Response<Unit>
+    ): Response<BaseResponse<Unit>>
 
     @POST("/api/v1/auth/verify-otp")
     suspend fun verifyOtp(

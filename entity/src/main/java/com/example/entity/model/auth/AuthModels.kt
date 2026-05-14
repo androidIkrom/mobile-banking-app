@@ -13,11 +13,16 @@ data class RefreshTokenRequest(
     val refreshToken: String
 )
 
-data class BaseResponse<T>(
-    val success: Boolean,
-    val data: T?,
+interface ApiResponse {
+    val success: Boolean
     val error: ApiError?
-)
+}
+
+data class BaseResponse<T>(
+    override val success: Boolean,
+    val data: T?,
+    override val error: ApiError?
+) : ApiResponse
 
 data class ApiError(
     val code: String,

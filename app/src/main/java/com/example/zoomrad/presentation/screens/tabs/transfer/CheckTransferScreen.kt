@@ -83,7 +83,7 @@ fun CheckTransferScreen(
     val cards by cardViewModel.cards.collectAsState()
     val selectedCard = cards.find { it.id == state.fromCardId }
 
-    val commission = (state.amount * 0.005).toLong()
+    val commission = state.amount * 0.005
     val total = state.amount + commission
 
     Scaffold(
@@ -337,6 +337,6 @@ fun DetailRow(label: String, value: String) {
     }
 }
 
-fun formatAmount(amount: Long): String {
-    return String.format(Locale.getDefault(), "%,d", amount).replace(',', ' ') + " so'm"
+fun formatAmount(amount: Double): String {
+    return String.format(Locale.getDefault(), "%,.2f", amount).replace(',', ' ') + " so'm"
 }
