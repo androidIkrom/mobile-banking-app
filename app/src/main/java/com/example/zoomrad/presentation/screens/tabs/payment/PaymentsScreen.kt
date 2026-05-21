@@ -28,6 +28,11 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.runtime.remember
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -37,6 +42,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -46,6 +53,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.entity.model.payment.PaymentProvider
 import com.example.presenter.vm.payment.PaymentViewModel
+import com.example.zoomrad.R
+import com.example.zoomrad.presentation.screens.tabs.home.getProviderIcon
 import org.orbitmvi.orbit.compose.collectAsState
 
 
@@ -60,6 +69,11 @@ fun PaymentsScreen(
     onProviderClick: (PaymentProvider) -> Unit
 ) {
     val state by viewModel.collectAsState()
+    var searchQuery by remember { mutableStateOf("") }
+    
+    val filteredProviders = remember(state.providers, searchQuery) {
+        state.providers.filter { it.name.contains(searchQuery, ignoreCase = true) }
+    }
 
     LaunchedEffect(Unit) {
         viewModel.fetchProviders()
@@ -74,7 +88,7 @@ fun PaymentsScreen(
         Spacer(modifier = Modifier.height(20.dp))
 
         Text(
-            text = "To'lovlar",
+            text = stringResource(R.string.payments_title),
             fontSize = 28.sp,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface
@@ -82,12 +96,15 @@ fun PaymentsScreen(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        PaymentsSearchBar()
+        PaymentsSearchBar(
+            query = searchQuery,
+            onQueryChange = { searchQuery = it }
+        )
 
         Spacer(modifier = Modifier.height(24.dp))
 
         Text(
-            text = "Barcha xizmatlar",
+            text = stringResource(R.string.payments_all_services),
             fontSize = 18.sp,
             fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.onSurface
@@ -107,7 +124,7 @@ fun PaymentsScreen(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(bottom = 16.dp)
             ) {
-                items(state.providers) { provider ->
+                items(filteredProviders) { provider ->
                     ServiceGridCard(provider, onClick = { onProviderClick(provider) })
                 }
             }
@@ -116,7 +133,10 @@ fun PaymentsScreen(
 }
 
 @Composable
-fun PaymentsSearchBar() {
+fun PaymentsSearchBar(
+    query: String,
+    onQueryChange: (String) -> Unit
+) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -138,10 +158,24 @@ fun PaymentsSearchBar() {
                 modifier = Modifier.size(24.dp)
             )
             Spacer(modifier = Modifier.width(12.dp))
-            Text(
-                text = "Qidiruv",
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                fontSize = 16.sp
+            BasicTextField(
+                value = query,
+                onValueChange = onQueryChange,
+                modifier = Modifier.weight(1f),
+                textStyle = MaterialTheme.typography.bodyLarge.copy(
+                    color = MaterialTheme.colorScheme.onSurface
+                ),
+                cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+                decorationBox = { innerTextField ->
+                    if (query.isEmpty()) {
+                        Text(
+                            text = stringResource(R.string.payments_search_hint),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            fontSize = 16.sp
+                        )
+                    }
+                    innerTextField()
+                }
             )
         }
     }
@@ -149,6 +183,7 @@ fun PaymentsSearchBar() {
 
 @Composable
 fun ServiceGridCard(provider: PaymentProvider, onClick: () -> Unit) {
+    val fallbackIcon = painterResource(remember(provider.name) { getProviderIcon(provider.name) })
     Card(
         modifier = Modifier
             .aspectRatio(0.9f)
@@ -187,7 +222,10 @@ fun ServiceGridCard(provider: PaymentProvider, onClick: () -> Unit) {
                 AsyncImage(
                     model = provider.logoUrl,
                     contentDescription = provider.name,
-                    modifier = Modifier.size(32.dp)
+                    modifier = Modifier.size(32.dp),
+                    error = fallbackIcon,
+                    placeholder = fallbackIcon,
+                    fallback = fallbackIcon
                 )
             }
 

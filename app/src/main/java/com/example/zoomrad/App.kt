@@ -15,4 +15,3 @@ class MyApp: Application(), Configuration.Provider {
             .setWorkerFactory(workerFactory)
             .build()
 }
-//yef

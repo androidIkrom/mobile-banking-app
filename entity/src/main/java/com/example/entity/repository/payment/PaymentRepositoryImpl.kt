@@ -9,9 +9,15 @@ import javax.inject.Inject
 class PaymentRepositoryImpl @Inject constructor(
     private val api : PaymentService
 ) : PaymentRepository{
-    override suspend fun getProviders(category: String?): Result<List<PaymentProvider>> = 
+    override suspend fun getProviders(category: String?): Result<List<PaymentProvider>> = try {
         api.getProviders(category).toResult()
+    } catch (e: Exception) {
+        Result.failure(e)
+    }
 
-    override suspend fun makePayment(request: PaymentRequest): Result<String> = 
+    override suspend fun makePayment(request: PaymentRequest): Result<String> = try {
         api.makePayment(request).toResult().map { "To`lov to`landi" }
+    } catch (e: Exception) {
+        Result.failure(e)
+    }
 }

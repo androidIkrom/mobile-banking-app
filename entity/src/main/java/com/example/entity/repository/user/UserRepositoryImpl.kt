@@ -12,19 +12,28 @@ internal class UserRepositoryImpl @Inject constructor(
     private val userApiService: UserApiService
 ) : UserRepository {
 
-    override suspend fun getProfile(): Result<UserProfile> = 
+    override suspend fun getProfile(): Result<UserProfile> = try {
         userApiService.getProfile().toResult()
+    } catch (e: Exception) {
+        Result.failure(e)
+    }
 
-    override suspend fun updateProfile(fullName: String): Result<UserProfile> = 
+    override suspend fun updateProfile(fullName: String): Result<UserProfile> = try {
         userApiService.updateProfile(UpdateProfileRequest(fullName)).toResult()
+    } catch (e: Exception) {
+        Result.failure(e)
+    }
 
     override suspend fun getTransactionHistory(
         page: Int,
         pageSize: Int,
         cardId: String?,
         type: String?
-    ): Result<List<TransactionData>> = 
+    ): Result<List<TransactionData>> = try {
         userApiService.getTransactionHistory(page, pageSize, cardId, type).toApiResult().map { 
             it.data ?: emptyList()
         }
+    } catch (e: Exception) {
+        Result.failure(e)
+    }
 }

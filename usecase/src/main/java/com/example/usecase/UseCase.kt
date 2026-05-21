@@ -57,6 +57,10 @@ interface AttachCardUseCase {
     suspend operator fun invoke(cardNumber: String): Result<CardData>
 }
 
+interface SetMainCardUseCase {
+    suspend operator fun invoke(cardId: String): Result<Unit>
+}
+
 interface GetTransactionsUseCase {
     suspend operator fun invoke(
         page: Int = 1,
@@ -100,4 +104,21 @@ interface ApplyLoanUseCase {
 
 interface RepayLoanUseCase {
     suspend operator fun invoke(id: String, request: RepayLoanRequest): Result<LoanData>
+}
+
+interface GetExchangeRatesUseCase {
+    suspend operator fun invoke(): Result<List<com.example.entity.model.exchange.ExchangeRate>>
+}
+
+interface GetKycStatusUseCase {
+    suspend operator fun invoke(): Result<com.example.entity.model.kyc.KycStatusData>
+}
+
+interface SubmitKycUseCase {
+    suspend operator fun invoke(
+        passportSeries: String,
+        passportNumber: String,
+        birthDate: String,
+        selfieBase64: String
+    ): Result<Unit>
 }

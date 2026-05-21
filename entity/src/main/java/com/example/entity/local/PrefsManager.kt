@@ -18,6 +18,11 @@ class PrefsManager @Inject constructor(
         get() = prefs.getString("access_token", null)
         set(value) = prefs.edit { putString("access_token", value) }
 
+    var appLanguage: String
+        get() = prefs.getString("app_language","uz")?: "uz"
+        set(value) = prefs.edit { putString("app_language",value) }
+
+
     var refreshToken: String?
         get() = prefs.getString("refresh_token", null)
         set(value) = prefs.edit { putString("refresh_token", value) }

@@ -1,0 +1,240 @@
+<resources>
+    <!-- Home Screen -->
+    <string name="main_user">ZOOMRAD USER</string>
+    <string name="verified_customer">Verified customer</string>
+    <string name="no_card_linked">No card linked</string>
+    <string name="total_points">%s points</string>
+    <string name="cashback_balance">Cashback balance ></string>
+    <string name="deposit">Deposit</string>
+    <string name="loan">Loan</string>
+    <string name="payments">Payments</string>
+    <string name="services">Services</string>
+    <string name="see_all">All</string>
+    <string name="turn_on_geolocation">Turn on geolocation</string>
+    <string name="geolocation_needed">This is required for the service</string>
+    <string name="turn_on">Enable</string>
+    <string name="currency_rates">Currency rates</string>
+    <string name="currency">Currency</string>
+    <string name="buy">Buy</string>
+    <string name="sell">Sell</string>
+    <string name="no_data">No data available</string>
+    <string name="last_update">Last update: </string>
+    <string name="logout">Logout</string>
+    <string name="app_version">Version %s</string>
+    <string name="cash_back">Cash Back poins</string>
+
+
+    <!-- Drawer Menu -->
+    <string name="menu_profile">Profile</string>
+    <string name="menu_id">Identification</string>
+    <string name="menu_settings">Settings</string>
+    <string name="menu_security">Security</string>
+    <string name="menu_applications">My applications</string>
+    <string name="menu_help">Help</string>
+    <string name="menu_share">Share app</string>
+    <string name="menu_about">About app</string>
+
+    <!-- Bottom Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_payments">Payments</string>
+    <string name="nav_transfers">Transfer</string>
+    <string name="nav_monitoring">Monitoring</string>
+    <string name="nav_services">Services</string>
+
+    <!-- Settings & Language -->
+    <string name="notifications">Notifications</string>
+    <string name="app_language">App language</string>
+    <string name="app_theme">App theme</string>
+    <string name="quick_payment">Quick payment</string>
+    <string name="monitoring">Monitoring</string>
+    <string name="public_offer">Public offer</string>
+    <string name="select_language">Select language</string>
+
+    <!-- About Screen -->
+    <string name="about_version">Version %s</string>
+    <string name="about_rate">Rate application</string>
+    <string name="about_share_app">Share application</string>
+    <string name="open_link">Open link</string>
+
+    <!-- Help Screen -->
+    <string name="help_online_chat">Online chat</string>
+    <string name="help_call_bank">Call the bank</string>
+    <string name="help_bank_map">Bank on the map</string>
+
+    <!-- Notification Screen -->
+    <string name="notif_voice">Voice notifications</string>
+    <string name="notif_transfers">About transfers</string>
+    <string name="notif_auto_pay">About auto-payment status</string>
+
+    <!-- Application Screen -->
+    <string name="no_applications">No applications</string>
+    <string name="no_applications_desc">All your applications for various services will be displayed on this page.</string>
+
+    <!-- Settings Dialogs -->
+    <string name="theme_select">Select theme</string>
+    <string name="close">Close</string>
+    <string name="lang_uz">O\'zbekcha</string>
+    <string name="lang_ru">Русский</string>
+    <string name="lang_en">English</string>
+    <string name="theme_system">System theme</string>
+    <string name="theme_dark">Dark theme</string>
+    <string name="theme_light">Light theme</string>
+
+    <!-- Login Screen -->
+    <string name="login_welcome">Welcome to Zoomrad</string>
+    <string name="login_subtitle">Enter your phone number to continue</string>
+    <string name="login_phone_hint">Phone Number</string>
+    <string name="login_button">Login</string>
+
+    <!-- OTP Screen -->
+    <string name="otp_title">Continue</string>
+    <string name="otp_subtitle">You need to verify code</string>
+    <string name="otp_resend_text">Resend code </string>
+    <string name="otp_verify_button">Verify</string>
+
+    <!-- App Lock Screen -->
+    <string name="lock_create_title">Create Password</string>
+    <string name="lock_confirm_title">Confirm Password</string>
+    <string name="lock_enter_title">Enter Code</string>
+    <string name="lock_reset_title">New Password</string>
+    <string name="lock_create_desc">Set a 4-digit code for local access</string>
+    <string name="lock_confirm_desc">Please re-enter your code to confirm</string>
+    <string name="lock_enter_desc">Enter your access code to continue</string>
+    <string name="lock_reset_desc">Enter a new 4-digit code</string>
+
+    <!-- KYC Screen -->
+    <string name="kyc_title">Identity Verification</string>
+    <string name="kyc_dialog_title">Select Image Source</string>
+    <string name="kyc_dialog_desc">Where do you want to get the selfie photo from?</string>
+    <string name="kyc_camera">Camera</string>
+    <string name="kyc_gallery">Gallery</string>
+    <string name="kyc_pending_desc">Your documents are being reviewed. This process can take up to 24 hours.</string>
+    <string name="kyc_status_verified">Verified</string>
+    <string name="kyc_status_pending">Pending</string>
+    <string name="kyc_status_rejected">Rejected</string>
+    <string name="kyc_status_not_submitted">Not submitted yet</string>
+    <string name="kyc_rejection_reason">Reason: %s</string>
+    <string name="kyc_passport_info">Passport Information</string>
+    <string name="kyc_series">Series</string>
+    <string name="kyc_number">Number</string>
+    <string name="kyc_birth_date">Birth Date (YYYY-MM-DD)</string>
+    <string name="kyc_selfie_hint">Selfie (Oval shape)</string>
+    <string name="kyc_submit_button">Submit for Verification</string>
+
+    <!-- Profile Screen -->
+    <string name="profile_title">My Information</string>
+    <string name="profile_edit_title">Edit Profile</string>
+    <string name="profile_welcome_title">Welcome! Enter your information</string>
+    <string name="profile_name_label">Full Name</string>
+    <string name="profile_save">Save</string>
+    <string name="profile_cancel">Cancel</string>
+    <string name="profile_name_error">Please enter your name</string>
+    <string name="profile_label_fio">F.I.O:</string>
+    <string name="profile_label_phone">Phone:</string>
+    <string name="profile_label_reg_date">Registration Date:</string>
+    <string name="profile_label_id">ID:</string>
+    <string name="profile_label_status">Status:</string>
+    <string name="profile_status_verified">Verified</string>
+    <string name="profile_status_not_verified">Not verified</string>
+    <string name="profile_kyc_button">Pass Identification</string>
+    <string name="profile_unknown">Unknown</string>
+
+    <!-- Loan Screens -->
+    <string name="loan_apply_title">Apply for Loan</string>
+    <string name="loan_amount_label">Amount</string>
+    <string name="loan_term_label">Term: %d months</string>
+    <string name="loan_receiver_card">Receiver card</string>
+    <string name="loan_apply_button">Confirm</string>
+    <string name="loan_apply_success">Loan successfully issued</string>
+    <string name="loan_repay_title">Repay Loan</string>
+    <string name="loan_repay_success">Payment successfully completed</string>
+    <string name="loan_balance_label">Balance: %s</string>
+    <string name="currency_som">UZS</string>
+
+    <!-- Monitoring Screen -->
+    <string name="monitor_title">Monitoring</string>
+    <string name="monitor_history">History</string>
+    <string name="monitor_incomes">Incomes</string>
+    <string name="monitor_expenses">Expenses</string>
+
+    <!-- Payments Screen -->
+    <string name="payments_title">Payments</string>
+    <string name="payments_search_hint">Search</string>
+    <string name="payments_all_services">All services</string>
+
+    <!-- Make Payment Screen -->
+    <string name="pay_card_label">Payment card</string>
+    <string name="pay_account_label">Account number / Phone</string>
+    <string name="pay_account_hint">Input</string>
+    <string name="pay_amount_label">Payment amount</string>
+    <string name="pay_amount_hint">0 UZS</string>
+    <string name="pay_button">Pay</string>
+    <string name="pay_fill_all_fields">Fill in all fields</string>
+
+    <!-- Transfer Screen -->
+    <string name="transfer_card_title">Transfer to card</string>
+    <string name="transfer_card_number_hint">Card number</string>
+    <string name="transfer_amount_label">Transfer amount</string>
+    <string name="transfer_amount_hint">0 UZS</string>
+    <string name="transfer_to_my_card">Transfer to\nmy card</string>
+    <string name="transfer_select_recipient">Select\nrecipient</string>
+    <string name="transfer_continue">Continue</string>
+    <string name="transfer_terms_agreement">By clicking \"Continue\", you express your agreement with the terms of the offer</string>
+    <string name="transfer_error_no_card">You have no card</string>
+    <string name="transfer_error_card_length">Card number must be 16 digits</string>
+    <string name="transfer_error_min_amount">Minimum transfer amount is 5000 UZS</string>
+    <string name="transfer_error_no_phone">Number not found, must input!</string>
+    <string name="transfer_not_found">Not found</string>
+
+    <!-- Cards Screen -->
+    <string name="cards_title">My Cards</string>
+    <string name="cards_add_title">Add Card</string>
+    <string name="cards_attach_title">Add Card</string>
+    <string name="cards_number_hint">Card number</string>
+    <string name="cards_sort_default">Default</string>
+    <string name="cards_sort_bal_asc">Balance (Ascending)</string>
+    <string name="cards_sort_bal_desc">Balance (Descending)</string>
+    <string name="cards_sort_name">By Name</string>
+    <string name="cards_filter_all">All</string>
+    <string name="cards_add_new">New card</string>
+    <string name="cards_add_new_desc">Add new card</string>
+    <string name="cards_add_all_aloqa">All Aloqabank cards</string>
+    <string name="cards_add_all_aloqa_desc">Download all at once</string>
+    <string name="cards_add_virtual">Virtual card</string>
+    <string name="cards_add_virtual_desc">Open virtual card</string>
+
+    <string name="cards_bank_uzcard">Uzcard Bank</string>
+    <string name="cards_bank_humo">Humo Bank</string>
+    <string name="cards_bank_visa">Visa Bank</string>
+    <string name="cards_filter_visa">Visa</string>
+    <string name="cards_filter_uzcard">Uzcard</string>
+    <string name="cards_filter_humo">Humo</string>
+
+    <!-- Additional Services Screen -->
+    <string name="services_additional_title">Additional</string>
+    <string name="services_search_placeholder">Service name</string>
+    <string name="services_my_loans">My loans</string>
+    <string name="loan_id_label">Loan #%s</string>
+    <string name="loan_status_active">Active</string>
+    <string name="loan_status_closed">Closed</string>
+    <string name="loan_remaining_debt">Remaining debt</string>
+    <string name="loan_next_payment">Next payment</string>
+
+    <!-- Service Names -->
+    <string name="service_online_payment">Online payment Alipay+</string>
+    <string name="service_kids_card">Kids Card</string>
+    <string name="service_savings">Savings</string>
+    <string name="service_moneysend">Mastercard MoneySend</string>
+    <string name="service_investment">Investment</string>
+    <string name="service_travel_insurance">Travel insurance</string>
+    <string name="service_identification">Identification</string>
+    <string name="service_get_loan">Get a loan</string>
+    <string name="service_my_cards">My cards</string>
+    <string name="service_monitoring">Monitoring</string>
+    <string name="service_payments">Payments</string>
+    <string name="service_transfer">Transfer</string>
+    <string name="service_my_home">My home</string>
+    <string name="service_my_car">My car</string>
+    <string name="service_face_pay">Face Pay</string>
+    <string name="service_visa_direct">Visa Direct</string>
+</resources>

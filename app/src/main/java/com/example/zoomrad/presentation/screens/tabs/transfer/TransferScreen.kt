@@ -18,7 +18,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -44,6 +48,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -57,6 +62,9 @@ import com.example.entity.model.card.CardData
 import com.example.presenter.vm.cards.CardViewModel
 import com.example.presenter.vm.profile.ProfileViewModel
 import com.example.presenter.vm.transfer.TransferViewModel
+import com.example.zoomrad.R
+import com.example.zoomrad.presentation.screens.tabs.home.formatAmount
+import com.example.zoomrad.ui.theme.GreenPrimary
 import com.example.zoomrad.ui.theme.ZoomradTheme
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
@@ -69,6 +77,7 @@ fun TransferScreen(
     cardViewModel: CardViewModel = hiltViewModel(),
     profileViewModel: ProfileViewModel = hiltViewModel()
 ) {
+
     val transferState by transferViewModel.collectAsState()
     val context = LocalContext.current
     val cards by cardViewModel.cards.collectAsState()
@@ -108,7 +117,14 @@ fun TransferScreen(
     }
     var cardNumber by remember { mutableStateOf("") }
     var amount by remember { mutableStateOf("") }
-
+    val isTransferValid = remember(cardNumber, amount, transferState.recipientName, selectedCard) {
+        cardNumber.length == 16 &&
+                transferState.recipientName != null &&
+                transferState.recipientName != context.getString(R.string.transfer_not_found) &&
+                amount.isNotEmpty() &&
+                (amount.toDoubleOrNull() ?: 0.0) >= 5000.0 &&
+                selectedCard != null
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -118,7 +134,7 @@ fun TransferScreen(
         Spacer(modifier = Modifier.height(20.dp))
 
         Text(
-            text = "Kartaga o'tkazma",
+            text = stringResource(R.string.transfer_card_title),
             fontSize = 28.sp,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onBackground
@@ -140,7 +156,7 @@ fun TransferScreen(
                             transferViewModel.checkCard(cardNumber)
                         }
                     },
-                    placeholder = { Text("Karta raqami", color = Color.Gray, fontSize = 16.sp) },
+                    placeholder = { Text(stringResource(R.string.transfer_card_number_hint), color = Color.Gray, fontSize = 16.sp) },
                     trailingIcon = {
                         Icon(
                             imageVector = Icons.Default.Info,
@@ -164,7 +180,7 @@ fun TransferScreen(
         }
         transferState.recipientName?.let { name ->
             Text(
-                text = name,
+                text = if (name == "Topilmadi") stringResource(R.string.transfer_not_found) else name,
                 color = if (name == "Topilmadi") Color.Red else MaterialTheme.colorScheme.primary,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium,
@@ -175,7 +191,7 @@ fun TransferScreen(
         Spacer(modifier = Modifier.height(20.dp))
 
         Text(
-            text = "O'tkazma summasi",
+            text = stringResource(R.string.transfer_amount_label),
             fontSize = 15.sp,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onBackground
@@ -191,10 +207,10 @@ fun TransferScreen(
             TextField(
                 value = amount,
                 onValueChange = { if (it.all { char -> char.isDigit() }) amount = it },
-                placeholder = { Text("0 so'm", color = Color.Gray, fontSize = 12.sp) },
+                placeholder = { Text(stringResource(R.string.transfer_amount_hint), color = Color.Gray, fontSize = 12.sp) },
                 trailingIcon = {
                     Icon(
-                        imageVector = Icons.Default.Info,
+                        imageVector = Icons.Default.Send,
                         contentDescription = null,
                         tint = Color(0xFF00A67E),
                         modifier = Modifier.size(24.dp)
@@ -220,13 +236,13 @@ fun TransferScreen(
         ) {
             ShortcutButton(
                 modifier = Modifier.weight(1f),
-                text = "Mening kartamga\no'tkazma",
-                icon = Icons.Default.Info
+                text = stringResource(R.string.transfer_to_my_card),
+                icon = Icons.Default.Person
             )
             ShortcutButton(
                 modifier = Modifier.weight(1f),
-                text = "Qabul qiluvchini\ntanlash",
-                icon = Icons.Default.Info
+                text = stringResource(R.string.transfer_select_recipient),
+                icon = Icons.Default.Search
             )
         }
 
@@ -256,7 +272,9 @@ fun TransferScreen(
                         contentScale = ContentScale.Crop
                     )
                 }
-                Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+                Column(modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
@@ -295,7 +313,7 @@ fun TransferScreen(
                                     )
                                     Spacer(modifier = Modifier.width(4.dp))
                                     Text(
-                                        text = "Asosiy",
+                                        text = stringResource(R.string.nav_home),
                                         color = Color.White,
                                         fontSize = 11.sp,
                                         fontWeight = FontWeight.Medium
@@ -366,18 +384,18 @@ fun TransferScreen(
         Button(
             onClick = {
                 if (selectedCard == null) {
-                    Toast.makeText(context, "Sizda card mavjus emas", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, context.getString(R.string.transfer_error_no_card), Toast.LENGTH_SHORT).show()
                 } else if (cardNumber.length != 16) {
                     Toast.makeText(
                         context,
-                        "karta 16 xonali son bo`lishi kerak",
+                        context.getString(R.string.transfer_error_card_length),
                         Toast.LENGTH_SHORT
                     )
                         .show()
                 } else if (amount.isEmpty() || amount.toDouble() < 5000) {
                     Toast.makeText(
                         context,
-                        "Summani 5000 yoki balandroq kiritishingiz kerak",
+                        context.getString(R.string.transfer_error_min_amount),
                         Toast.LENGTH_SHORT
                     ).show()
                 } else {
@@ -393,7 +411,7 @@ fun TransferScreen(
                     } else {
                         Toast.makeText(
                             context,
-                            "Raqam topilmadi , kiritishingiz kerak !",
+                            context.getString(R.string.transfer_error_no_phone),
                             Toast.LENGTH_SHORT
                         ).show()
                     }
@@ -405,20 +423,25 @@ fun TransferScreen(
                 .height(56.dp),
             shape = RoundedCornerShape(16.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = if (MaterialTheme.colorScheme.background == Color(0xFFF7F9F8)) Color(
-                    0xFFEBEBEB
-                ) else Color(0xFF2D3843), contentColor = Color.Gray
+                containerColor = if (isTransferValid) {
+                    GreenPrimary
+                } else if (MaterialTheme.colorScheme.background == Color(0xFFF7F9F8)) {
+                    Color(0xFFEBEBEB)
+                } else {
+                    Color(0xFF2D3843)
+                },
+                contentColor = if (isTransferValid) Color.White else Color.Gray
             )
         ) {
             Text(
-                text = "Davom ettirish", fontSize = 16.sp, fontWeight = FontWeight.Bold
+                text = stringResource(R.string.transfer_continue), fontSize = 16.sp, fontWeight = FontWeight.Bold
             )
         }
 
         Spacer(modifier = Modifier.height(12.dp))
 
         Text(
-            text = "\"Davom ettirish\"ni bosish orqali siz\noferta shartlariga o'z roziligingizni bildirasiz",
+            text = stringResource(R.string.transfer_terms_agreement),
             fontSize = 12.sp,
             color = Color.Gray,
             textAlign = TextAlign.Center,
@@ -441,7 +464,7 @@ fun TransferScreen(
             sheetState = sheetState,
             onAddCardClick = {
                 showCardSheet = false
-                navController.navigate("cards") // Navigate to cards screen to add a card
+                navController.navigate("cards")
             }
         )
     }

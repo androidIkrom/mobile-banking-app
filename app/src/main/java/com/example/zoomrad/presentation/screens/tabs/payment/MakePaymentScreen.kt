@@ -46,6 +46,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -56,13 +58,14 @@ import coil.compose.AsyncImage
 import com.example.entity.model.card.CardData
 import com.example.presenter.vm.cards.CardViewModel
 import com.example.presenter.vm.payment.PaymentViewModel
+import com.example.zoomrad.R
+import com.example.zoomrad.presentation.screens.tabs.home.getProviderIcon
 import com.example.zoomrad.ui.theme.GreenPrimary
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import java.util.Locale
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MakePaymentScreen(
@@ -80,7 +83,7 @@ fun MakePaymentScreen(
     var selectedByCard by remember { mutableStateOf<CardData?>(null) }
     var account by remember { mutableStateOf("") }
     var amount by remember { mutableStateOf("") }
-
+    val fallbackIcon = painterResource(remember(providerName) { getProviderIcon(providerName) })
     LaunchedEffect(Unit) {
         cardViewModel.fetchCards()
     }
@@ -96,11 +99,14 @@ fun MakePaymentScreen(
             is PaymentViewModel.PaymentSideEffect.ShowError -> {
                 Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
             }
+
             is PaymentViewModel.PaymentSideEffect.ShowSuccess -> {
                 Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
                 val encodedUrl = URLEncoder.encode(logoUrl, StandardCharsets.UTF_8.toString())
                 navController.navigate("payment_receipt/$providerName/$amount/$account/$encodedUrl") {
-                    popUpTo("make_payment/$providerId/$providerName/$encodedUrl") { inclusive = true }
+                    popUpTo("make_payment/$providerId/$providerName/$encodedUrl") {
+                        inclusive = true
+                    }
                 }
             }
         }
@@ -109,10 +115,19 @@ fun MakePaymentScreen(
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text(text = providerName, fontWeight = FontWeight.Bold, fontSize = 18.sp) },
+                title = {
+                    Text(
+                        text = providerName,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = "Back")
+                        Icon(
+                            Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                            contentDescription = "Back"
+                        )
                     }
                 }
             )
@@ -134,25 +149,27 @@ fun MakePaymentScreen(
                     .background(MaterialTheme.colorScheme.surfaceVariant)
                     .align(Alignment.CenterHorizontally),
                 contentAlignment = Alignment.Center
-            ) {
-                AsyncImage(
+            ) {AsyncImage(
                     model = logoUrl,
                     contentDescription = providerName,
                     modifier = Modifier.size(60.dp),
-                    contentScale = ContentScale.Fit
+                    contentScale = ContentScale.Fit,
+                    error = fallbackIcon,
+                    placeholder = fallbackIcon,
+                    fallback = fallbackIcon
                 )
             }
 
             Spacer(modifier = Modifier.height(32.dp))
 
             Text(
-                text = "To'lov kartasi",
+                text = stringResource(R.string.pay_card_label),
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onBackground
             )
             Spacer(modifier = Modifier.height(12.dp))
-            
+
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 contentPadding = PaddingValues(bottom = 8.dp)
@@ -169,7 +186,7 @@ fun MakePaymentScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                text = "Hisob raqami / Telefon",
+                text = stringResource(R.string.pay_account_label),
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onBackground
@@ -179,7 +196,7 @@ fun MakePaymentScreen(
                 value = account,
                 onValueChange = { account = it },
                 modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text("Kiritish") },
+                placeholder = { Text(stringResource(R.string.pay_account_hint)) },
                 shape = RoundedCornerShape(16.dp),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 colors = OutlinedTextFieldDefaults.colors(
@@ -191,7 +208,7 @@ fun MakePaymentScreen(
             Spacer(modifier = Modifier.height(20.dp))
 
             Text(
-                text = "To'lov summasi",
+                text = stringResource(R.string.pay_amount_label),
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onBackground
@@ -201,10 +218,10 @@ fun MakePaymentScreen(
                 value = amount,
                 onValueChange = { if (it.all { char -> char.isDigit() }) amount = it },
                 modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text("0 so'm") },
+                placeholder = { Text(stringResource(R.string.pay_amount_hint)) },
                 shape = RoundedCornerShape(16.dp),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                suffix = { Text("so'm") },
+                suffix = { Text(stringResource(R.string.currency_som)) },
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = GreenPrimary,
                     unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
@@ -224,7 +241,8 @@ fun MakePaymentScreen(
                             account = account
                         )
                     } else {
-                        Toast.makeText(context, "Barcha maydonlarni to'ldiring", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, context.getString(R.string.pay_fill_all_fields), Toast.LENGTH_SHORT)
+                            .show()
                     }
                 },
                 modifier = Modifier
@@ -237,7 +255,7 @@ fun MakePaymentScreen(
                 if (paymentState.isLoading) {
                     CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
                 } else {
-                    Text(text = "To'lash", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                    Text(text = stringResource(R.string.pay_button), fontSize = 16.sp, fontWeight = FontWeight.Bold)
                 }
             }
 
@@ -258,8 +276,13 @@ fun MiniCardItem(
             .width(160.dp)
             .height(90.dp),
         shape = RoundedCornerShape(16.dp),
-        color = if (isSelected) GreenPrimary else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-        border = if (isSelected) null else androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.1f))
+        color = if (isSelected) GreenPrimary else MaterialTheme.colorScheme.surfaceVariant.copy(
+            alpha = 0.5f
+        ),
+        border = if (isSelected) null else androidx.compose.foundation.BorderStroke(
+            1.dp,
+            MaterialTheme.colorScheme.outline.copy(alpha = 0.1f)
+        )
     ) {
         Column(
             modifier = Modifier.padding(12.dp),
@@ -273,7 +296,8 @@ fun MiniCardItem(
             )
             Column {
                 Text(
-                    text = String.format(Locale.getDefault(), "%,d", card.balance.toLong()).replace(',', ' ') + " " + card.currency,
+                    text = String.format(Locale.getDefault(), "%,d", card.balance.toLong())
+                        .replace(',', ' ') + " " + card.currency,
                     color = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurface,
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Bold

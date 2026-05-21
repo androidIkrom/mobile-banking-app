@@ -1,3 +1,241 @@
 <resources>
-    <string name="app_name">Zoomrad</string>
+    <string name="app_name" translatable="false">Zoomrad</string>
+
+    <!-- Home Screen -->
+    <string name="main_user">ZOOMRAD FOYDALANUVCHISI</string>
+    <string name="verified_customer">Tasdiqlangan mijoz</string>
+    <string name="no_card_linked">Karta biriktirilmagan</string>
+    <string name="total_points">%s ballar</string>
+    <string name="cashback_balance">Keshbek balansi ></string>
+    <string name="deposit">Omonat</string>
+    <string name="loan">Kredit</string>
+    <string name="payments">To\'lovlar</string>
+    <string name="services">Xizmatlar</string>
+    <string name="see_all">Barchasi</string>
+    <string name="turn_on_geolocation">Geolokatsiyani yoqing</string>
+    <string name="geolocation_needed">Bu xizmat ishlashi uchun zarur</string>
+    <string name="turn_on">Yoqish</string>
+    <string name="currency_rates">Valyuta kursi</string>
+    <string name="currency">Valyuta</string>
+    <string name="buy">Sotib olish</string>
+    <string name="sell">Sotish</string>
+    <string name="no_data">Ma\'lumotlar mavjud emas</string>
+    <string name="last_update">Oxirgi yangilanish: </string>
+    <string name="logout">Chiqish</string>
+    <string name="app_version">Versiya %s</string>
+    <string name="cash_back">Keshbek ballar</string>
+
+    <!-- Drawer Menu -->
+    <string name="menu_profile">Profil</string>
+    <string name="menu_id">Identifikatsiya</string>
+    <string name="menu_settings">Sozlamalar</string>
+    <string name="menu_security">Xavfsizlik</string>
+    <string name="menu_applications">Mening arizalarim</string>
+    <string name="menu_help">Yordam</string>
+    <string name="menu_share">Dasturni ulashing</string>
+    <string name="menu_about">Ilova haqida</string>
+
+    <!-- Bottom Navigation -->
+    <string name="nav_home">Asosiy</string>
+    <string name="nav_payments">To\'lovlar</string>
+    <string name="nav_transfers">O\'tkazma</string>
+    <string name="nav_monitoring">Monitoring</string>
+    <string name="nav_services">Xizmatlar</string>
+
+    <!-- Settings & Language -->
+    <string name="notifications">Xabarnoma</string>
+    <string name="app_language">Ilova tili</string>
+    <string name="app_theme">Ilova mavzusi</string>
+    <string name="quick_payment">Tezkor to\'lov</string>
+    <string name="monitoring">Monitoring</string>
+    <string name="public_offer">Ommaviy oferta</string>
+    <string name="select_language">Tilni tanlang</string>
+
+    <!-- About Screen -->
+    <string name="about_version">Versiya %s</string>
+    <string name="about_rate">Ilovani baholang</string>
+    <string name="about_share_app">Dasturni ulashing</string>
+    <string name="open_link">Havolani ochish</string>
+
+    <!-- Help Screen -->
+    <string name="help_online_chat">Onlayn chat</string>
+    <string name="help_call_bank">Bankga qo\'ng\'iroq qilish</string>
+    <string name="help_bank_map">Bank xaritada</string>
+
+    <!-- Notification Screen -->
+    <string name="notif_voice">Ovozli bildirishnomalar</string>
+    <string name="notif_transfers">O\'tkazmalar haqida</string>
+    <string name="notif_auto_pay">Avtoto\'lov statusi haqida</string>
+
+    <!-- Application Screen -->
+    <string name="no_applications">Arizalar yo\'q</string>
+    <string name="no_applications_desc">Barcha turli xizmatlar bo\'yicha arizalaringiz ushbu sahifada ko\'rsatiladi.</string>
+
+    <!-- Settings Dialogs -->
+    <string name="theme_select">Mavzuni tanlang</string>
+    <string name="close">Yopish</string>
+    <string name="lang_uz">O\'zbekcha</string>
+    <string name="lang_ru">Русский</string>
+    <string name="lang_en">English</string>
+    <string name="theme_system">Tizim mavzusi</string>
+    <string name="theme_dark">Tungi mavzu</string>
+    <string name="theme_light">Yorug\' mavzu</string>
+
+    <!-- Login Screen -->
+    <string name="login_welcome">Zoomrad-ga xush kelibsiz</string>
+    <string name="login_subtitle">Davom etish uchun telefon raqamingizni kiriting</string>
+    <string name="login_phone_hint">Telefon raqami</string>
+    <string name="login_button">Kirish</string>
+
+    <!-- OTP Screen -->
+    <string name="otp_title">Davom etish</string>
+    <string name="otp_subtitle">Kodni tasdiqlashingiz kerak</string>
+    <string name="otp_resend_text">Kodni qayta yuborish </string>
+    <string name="otp_verify_button">Tasdiqlash</string>
+
+    <!-- App Lock Screen -->
+    <string name="lock_create_title">Parol yaratish</string>
+    <string name="lock_confirm_title">Parolni tasdiqlash</string>
+    <string name="lock_enter_title">Kodni kiriting</string>
+    <string name="lock_reset_title">Yangi parol</string>
+    <string name="lock_create_desc">Ilovaga kirish uchun 4 xonali kod o\'rnating</string>
+    <string name="lock_confirm_desc">Tasdiqlash uchun kodni qayta kiriting</string>
+    <string name="lock_enter_desc">Davom etish uchun kodni kiriting</string>
+    <string name="lock_reset_desc">Yangi 4 xonali kodni kiriting</string>
+
+    <!-- KYC Screen -->
+    <string name="kyc_title">Shaxsni tasdiqlash</string>
+    <string name="kyc_dialog_title">Rasm manbasini tanlang</string>
+    <string name="kyc_dialog_desc">Selfie rasmini qayerdan olmoqchisiz?</string>
+    <string name="kyc_camera">Kamera</string>
+    <string name="kyc_gallery">Galereya</string>
+    <string name="kyc_pending_desc">Sizning hujjatlaringiz ko\'rib chiqilmoqda. Bu jarayon 24 soatgacha davom etishi mumkin.</string>
+    <string name="kyc_status_verified">Tasdiqlangan</string>
+    <string name="kyc_status_pending">Ko\'rib chiqilmoqda</string>
+    <string name="kyc_status_rejected">Rad etilgan</string>
+    <string name="kyc_status_not_submitted">Hali topshirilmagan</string>
+    <string name="kyc_rejection_reason">Sabab: %s</string>
+    <string name="kyc_passport_info">Passport ma\'lumotlari</string>
+    <string name="kyc_series">Seriya</string>
+    <string name="kyc_number">Raqam</string>
+    <string name="kyc_birth_date">Tug\'ilgan sana (YYYY-MM-DD)</string>
+    <string name="kyc_selfie_hint">Selfie (Oval shaklda)</string>
+    <string name="kyc_submit_button">Tasdiqlashga yuborish</string>
+
+    <!-- Profile Screen -->
+    <string name="profile_title">Mening ma\'lumotlarim</string>
+    <string name="profile_edit_title">Profilni tahrirlash</string>
+    <string name="profile_welcome_title">Xush kelibsiz! Ma\'lumotlaringizni kiriting</string>
+    <string name="profile_name_label">To\'liq ism</string>
+    <string name="profile_save">Saqlash</string>
+    <string name="profile_cancel">Bekor qilish</string>
+    <string name="profile_name_error">Iltimos, ismingizni kiriting</string>
+    <string name="profile_label_fio">F.I.O:</string>
+    <string name="profile_label_phone">Telefon:</string>
+    <string name="profile_label_reg_date">Ro\'yxatdan o\'tgan sana:</string>
+    <string name="profile_label_id">ID:</string>
+    <string name="profile_label_status">Holati:</string>
+    <string name="profile_status_verified">Tasdiqlangan</string>
+    <string name="profile_status_not_verified">Tasdiqlanmagan</string>
+    <string name="profile_kyc_button">Identifikatsiyadan o\'tish</string>
+    <string name="profile_unknown">Nomalum</string>
+
+    <!-- Loan Screens -->
+    <string name="loan_apply_title">Kredit olish</string>
+    <string name="loan_amount_label">Summa</string>
+    <string name="loan_term_label">Muddati: %d oy</string>
+    <string name="loan_receiver_card">Qabul qiluvchi karta</string>
+    <string name="loan_apply_button">Tasdiqlash</string>
+    <string name="loan_apply_success">Kredit muvaffaqiyatli rasmiylashtirildi</string>
+    <string name="loan_repay_title">Kredit to`ldirish</string>
+    <string name="loan_repay_success">To\'lov muvaffaqiyatli amalga oshirildi</string>
+    <string name="loan_balance_label">Balans: %s</string>
+    <string name="currency_som">so\'m</string>
+
+    <!-- Monitoring Screen -->
+    <string name="monitor_title">Monitoring</string>
+    <string name="monitor_history">Tarix</string>
+    <string name="monitor_incomes">Tushumlar</string>
+    <string name="monitor_expenses">Chiqimlar</string>
+
+    <!-- Payments Screen -->
+    <string name="payments_title">To\'lovlar</string>
+    <string name="payments_search_hint">Qidiruv</string>
+    <string name="payments_all_services">Barcha xizmatlar</string>
+
+    <!-- Make Payment Screen -->
+    <string name="pay_card_label">To\'lov kartasi</string>
+    <string name="pay_account_label">Hisob raqami / Telefon</string>
+    <string name="pay_account_hint">Kiritish</string>
+    <string name="pay_amount_label">To\'lov summasi</string>
+    <string name="pay_amount_hint">0 so\'m</string>
+    <string name="pay_button">To\'lash</string>
+    <string name="pay_fill_all_fields">Barcha maydonlarni to\'ldiring</string>
+
+    <!-- Transfer Screen -->
+    <string name="transfer_card_title">Kartaga o\'tkazma</string>
+    <string name="transfer_card_number_hint">Karta raqami</string>
+    <string name="transfer_amount_label">O\'tkazma summasi</string>
+    <string name="transfer_amount_hint">0 so\'m</string>
+    <string name="transfer_to_my_card">Mening kartamga\no\'tkazma</string>
+    <string name="transfer_select_recipient">Qabul qiluvchini\ntanlash</string>
+    <string name="transfer_continue">Davom ettirish</string>
+    <string name="transfer_terms_agreement">\"Davom ettirish\"ni bosish orqali siz\noferta shartlariga o\'z roziligingizni bildirasiz</string>
+    <string name="transfer_error_no_card">Sizda card mavjus emas</string>
+    <string name="transfer_error_card_length">karta 16 xonali son bo`lishi kerak</string>
+    <string name="transfer_error_min_amount">Summani 5000 yoki balandroq kiritishingiz kerak</string>
+    <string name="transfer_error_no_phone">Raqam topilmadi , kiritishingiz kerak !</string>
+    <string name="transfer_not_found">Topilmadi</string>
+
+    <!-- Cards Screen -->
+    <string name="cards_title">Kartalarim</string>
+    <string name="cards_add_title">Karta qo\'shish</string>
+    <string name="cards_attach_title">Karta qo\'shish</string>
+    <string name="cards_number_hint">Karta raqami</string>
+    <string name="cards_sort_default">Asl holati</string>
+    <string name="cards_sort_bal_asc">Balans (O\'sish)</string>
+    <string name="cards_sort_bal_desc">Balans (Kamayish)</string>
+    <string name="cards_sort_name">Nomi bo\'yicha</string>
+    <string name="cards_filter_all">Barchasi</string>
+    <string name="cards_add_new">Yangi karta</string>
+    <string name="cards_add_new_desc">Yangi karta qo\'shish</string>
+    <string name="cards_add_all_aloqa">Barcha Aloqabank kartalari</string>
+    <string name="cards_add_all_aloqa_desc">Hammasini bir martada yuklang</string>
+    <string name="cards_add_virtual">Virtual karta</string>
+    <string name="cards_add_virtual_desc">Virtual karta ochish</string>
+
+    <string name="cards_bank_uzcard">Uzcard Bank</string>
+    <string name="cards_bank_humo">Humo Bank</string>
+    <string name="cards_bank_visa">Visa Bank</string>
+    <string name="cards_filter_visa">Visa</string>
+    <string name="cards_filter_uzcard">Uzcard</string>
+    <string name="cards_filter_humo">Humo</string>
+
+    <!-- Additional Services Screen -->
+    <string name="services_additional_title">Qo\'shimcha</string>
+    <string name="services_search_placeholder">Xizmat nomi</string>
+    <string name="services_my_loans">Mening kreditlarim</string>
+    <string name="loan_id_label">Kredit #%s</string>
+    <string name="loan_status_active">Faol</string>
+    <string name="loan_status_closed">Yopilgan</string>
+    <string name="loan_remaining_debt">Qolgan qarz</string>
+    <string name="loan_next_payment">Keyingi to\'lov</string>
+
+    <!-- Service Names -->
+    <string name="service_online_payment">Onlayn to\'lov Alipay+</string>
+    <string name="service_kids_card">Kids Card</string>
+    <string name="service_savings">Jamg\'arma</string>
+    <string name="service_moneysend">Mastercard MoneySend</string>
+    <string name="service_investment">Investitsiya</string>
+    <string name="service_travel_insurance">Sayohat sug\'urtasi</string>
+    <string name="service_identification">Identifikatsiya</string>
+    <string name="service_get_loan">Kredit olish</string>
+    <string name="service_my_cards">Kartalarim</string>
+    <string name="service_monitoring">Monitoring</string>
+    <string name="service_payments">To\'lovlar</string>
+    <string name="service_transfer">O\'tkazma</string>
+    <string name="service_my_home">Mening uyim</string>
+    <string name="service_my_car">Mening avtomobilim</string>
+    <string name="service_face_pay">Face Pay</string>
+    <string name="service_visa_direct">Visa Direct</string>
 </resources>

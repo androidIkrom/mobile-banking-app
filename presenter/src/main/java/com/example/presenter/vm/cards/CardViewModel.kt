@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.entity.model.card.CardData
 import com.example.usecase.AttachCardUseCase
 import com.example.usecase.GetCardsUseCase
+import com.example.usecase.SetMainCardUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,7 +15,8 @@ import javax.inject.Inject
 @HiltViewModel
 class CardViewModel @Inject constructor(
     private val getCardsUseCase: GetCardsUseCase,
-    private val attachCardUseCase: AttachCardUseCase
+    private val attachCardUseCase: AttachCardUseCase,
+    private val setMainCardUseCase: SetMainCardUseCase
 ) : ViewModel() {
 
     private val _cards = MutableStateFlow<List<CardData>>(emptyList())
@@ -43,6 +45,19 @@ class CardViewModel @Inject constructor(
         viewModelScope.launch {
             _isLoading.value = true
             attachCardUseCase(cardNumber).onSuccess {
+                fetchCards()
+                _error.value = null
+            }.onFailure {
+                _error.value = it.message
+            }
+            _isLoading.value = false
+        }
+    }
+
+    fun setMainCard(cardId: String) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            setMainCardUseCase(cardId).onSuccess {
                 fetchCards()
                 _error.value = null
             }.onFailure {

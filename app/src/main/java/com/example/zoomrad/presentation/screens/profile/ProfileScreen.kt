@@ -27,6 +27,7 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -52,6 +53,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -64,6 +66,7 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 @Composable
 fun ProfileScreen(
     onBack: () -> Unit,
+    onNavigateToKyc: () -> Unit,
     viewModel: ProfileViewModel
 ) {
     val state by viewModel.collectAsState()
@@ -94,12 +97,12 @@ fun ProfileScreen(
             onDismissRequest = { 
                 if (!state.isNewUser) showEditDialog = false 
             },
-            title = { Text(if (state.isNewUser) "Xush kelibsiz! Ma'lumotlaringizni kiriting" else "Profilni tahrirlash") },
+            title = { Text(stringResource(if (state.isNewUser) R.string.profile_welcome_title else R.string.profile_edit_title)) },
             text = {
                 OutlinedTextField(
                     value = newFullName,
                     onValueChange = { newFullName = it },
-                    label = { Text("To'liq ism") },
+                    label = { Text(stringResource(R.string.profile_name_label)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true
                 )
@@ -110,18 +113,18 @@ fun ProfileScreen(
                         if (newFullName.isNotBlank()) {
                             viewModel.updateProfile(newFullName)
                         } else {
-                            Toast.makeText(context, "Iltimos, ismingizni kiriting", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, context.getString(R.string.profile_name_error), Toast.LENGTH_SHORT).show()
                         }
                     },
                     enabled = !state.isLoading
                 ) {
-                    Text("Saqlash")
+                    Text(stringResource(R.string.profile_save))
                 }
             },
             dismissButton = {
                 if (!state.isNewUser) {
                     TextButton(onClick = { showEditDialog = false }) {
-                        Text("Bekor qilish")
+                        Text(stringResource(R.string.profile_cancel))
                     }
                 }
             }
@@ -149,7 +152,7 @@ fun ProfileScreen(
                     )
                 }
                 Text(
-                    text = "Mening ma'lumotlarim",
+                    text = stringResource(R.string.profile_title),
                     modifier = Modifier.weight(1f),
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
@@ -184,10 +187,10 @@ fun ProfileScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
-                        painter = painterResource(R.drawable.ic_profile),
+                        painter = painterResource(R.drawable.ic_pr),
                         contentDescription = "user_avatar",
                         contentScale = ContentScale.Fit,
-                        modifier = Modifier.size(80.dp),
+                        modifier = Modifier.size(70.dp),
                     )
                 }
 
@@ -218,7 +221,7 @@ fun ProfileScreen(
                             }
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
-                                text = "TASDIQLANGAN MIJOZ",
+                                text = stringResource(R.string.verified_customer).uppercase(),
                                 color = Color.White,
                                 fontSize = 11.sp,
                                 fontWeight = FontWeight.ExtraBold
@@ -229,20 +232,42 @@ fun ProfileScreen(
 
                 Spacer(modifier = Modifier.height(32.dp))
 
+                val unknownStr = stringResource(R.string.profile_unknown)
                 ProfileInfoCard {
-                    ProfileInfoRow("F.I.O:", state.userProfile?.fullName ?: "Nomalum")
+                    ProfileInfoRow(stringResource(R.string.profile_label_fio), state.userProfile?.fullName ?: unknownStr)
                     HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f))
-                    ProfileInfoRow("Telefon:", state.userProfile?.phone ?: "Nomalum")
+                    ProfileInfoRow(stringResource(R.string.profile_label_phone), state.userProfile?.phone ?: unknownStr)
                     HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f))
-                    ProfileInfoRow("Ro'yxatdan o'tgan sana:", state.userProfile?.createdAt?.take(10) ?: "Nomalum")
+                    ProfileInfoRow(stringResource(R.string.profile_label_reg_date), state.userProfile?.createdAt?.take(10) ?: unknownStr)
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
                 ProfileInfoCard {
-                    ProfileInfoRow("ID:", state.userProfile?.id ?: "Nomalum", hasCopy = true)
+                    ProfileInfoRow(stringResource(R.string.profile_label_id), state.userProfile?.id ?: unknownStr, hasCopy = true)
                     HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f))
-                    ProfileInfoRow("Holati:", if (state.userProfile?.isKycVerified == true) "Tasdiqlangan" else "Tasdiqlanmagan")
+                    ProfileInfoRow(
+                        stringResource(R.string.profile_label_status), 
+                        if (state.userProfile?.isKycVerified == true) stringResource(R.string.profile_status_verified) else stringResource(R.string.profile_status_not_verified)
+                    )
+                }
+
+                if (state.userProfile?.isKycVerified != true) {
+                    Spacer(modifier = Modifier.height(24.dp))
+                    Button(
+                        onClick = onNavigateToKyc,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = GreenPrimary)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.profile_kyc_button),
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp
+                        )
+                    }
                 }
             }
         }

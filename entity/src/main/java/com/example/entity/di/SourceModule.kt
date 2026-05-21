@@ -99,8 +99,18 @@ internal class SourceModule {
     @Provides
     fun providePaymentApi(retrofit: Retrofit) : PaymentService = retrofit.create(PaymentService::class.java)
 
-    @Singleton
     @Provides
+    @Singleton
     fun provideLoanApi(retrofit: Retrofit): LoanApiService = retrofit.create(LoanApiService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideExchangeApi(retrofit: Retrofit): com.example.entity.network.exchange.ExchangeApiService =
+        retrofit.create(com.example.entity.network.exchange.ExchangeApiService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideKycApi(retrofit: Retrofit): com.example.entity.network.kyc.KycService =
+        retrofit.create(com.example.entity.network.kyc.KycService::class.java)
 
 }

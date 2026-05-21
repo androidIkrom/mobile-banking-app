@@ -14,11 +14,16 @@ import com.example.entity.local.PrefsManager
 import com.example.presenter.vm.auth.AuthViewModel
 import com.example.presenter.vm.profile.ProfileViewModel
 import com.example.zoomrad.MainViewModel
+import com.example.zoomrad.presentation.screens.about.AboutScreen
+import com.example.zoomrad.presentation.screens.applications.ApplicationScreen
 import com.example.zoomrad.presentation.screens.auth.LoginScreen
 import com.example.zoomrad.presentation.screens.auth.VerifyOtpScreen
 import com.example.zoomrad.presentation.screens.cards.CardsScreen
+import com.example.zoomrad.presentation.screens.help.HelpScreen
+import com.example.zoomrad.presentation.screens.kyc.KycScreen
 import com.example.zoomrad.presentation.screens.lock.AppLockScreen
 import com.example.zoomrad.presentation.screens.profile.ProfileScreen
+import com.example.zoomrad.presentation.screens.settings.NotificationScreen
 import com.example.zoomrad.presentation.screens.settings.SettingsScreen
 import com.example.zoomrad.presentation.screens.splash.SplashScreen
 import com.example.zoomrad.presentation.screens.tabs.home.HomeScreen
@@ -89,6 +94,15 @@ class LockNavigation(
                     navController.navigate(BottomNavItem.Asosiy.route) {
                         popUpTo("lock") { inclusive = true }
                     }
+                }
+            )
+        }
+        builder.composable("reset_pin") {
+            AppLockScreen(
+                prefsManager = prefsManager,
+                isResetMode = true,
+                onSuccess = {
+                    navController.popBackStack()
                 }
             )
         }
@@ -178,6 +192,9 @@ class HomeNavigation(
         builder.composable("apply_loan") {
             ApplyLoanScreen(navController)
         }
+        builder.composable("kyc") {
+            KycScreen(navController)
+        }
         builder.composable(
             route = "repay_loan/{loanId}/{monthlyPayment}",
             arguments = listOf(
@@ -224,15 +241,42 @@ class SettingsNavigation(
 ) {
     fun register(builder: NavGraphBuilder) {
         builder.composable("settings") {
-            SettingsScreen(mainViewModel) {
-                navController.popBackStack()
-            }
+            SettingsScreen(
+                viewModel = mainViewModel,
+                cardViewModel = hiltViewModel(),
+                onNotificationClick = {
+                    navController.navigate("notifications")
+                },
+                onBack = {
+                    navController.popBackStack()
+                },
+                onAddCardClick = {
+                    navController.navigate("cards")
+                }
+            )
         }
         builder.composable("profile") {
-            ProfileScreen(viewModel = profileViewModel, onBack = {
-                navController.popBackStack()
-            })
+            ProfileScreen(
+                viewModel = profileViewModel,
+                onBack = { navController.popBackStack() },
+                onNavigateToKyc = { navController.navigate("kyc") }
+            )
         }
+        builder.composable("applications") {
+            ApplicationScreen (onBack = { navController.popBackStack() })
+        }
+        builder.composable("help") {
+            HelpScreen (onBack = { navController.popBackStack() })
+        }
+        builder.composable("about") {
+            AboutScreen(onBack = { navController.popBackStack() })
+        }
+        builder.composable("notifications") {
+            NotificationScreen (onBack = { navController.popBackStack() })
+        }
+
+
+
     }
 }
 

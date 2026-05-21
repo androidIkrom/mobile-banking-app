@@ -33,12 +33,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.presenter.vm.transaction.TransactionViewModel
+import com.example.zoomrad.R
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -121,14 +123,14 @@ fun MonitoringScreen(
                 item {
                     SummaryCard(
                         amount = String.format(Locale.getDefault(), "%,d", totalIncome.toLong()).replace(',', ' '),
-                        label = "Tushumlar",
+                        label = stringResource(R.string.monitor_incomes),
                         isIncome = true
                     )
                 }
                 item {
                     SummaryCard(
                         amount = String.format(Locale.getDefault(), "%,d", totalExpense.toLong()).replace(',', ' '),
-                        label = "Chiqimlar",
+                        label = stringResource(R.string.monitor_expenses),
                         isIncome = false
                     )
                 }
@@ -168,14 +170,14 @@ fun MonitoringHeader() {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "Monitoring",
+            text = stringResource(R.string.monitor_title),
             fontSize = 28.sp,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface
         )
         Spacer(modifier = Modifier.width(16.dp))
         Text(
-            text = "Tarix",
+            text = stringResource(R.string.monitor_history),
             fontSize = 26.sp,
             fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.onSurface

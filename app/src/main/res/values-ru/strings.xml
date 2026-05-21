@@ -1,0 +1,238 @@
+<resources>
+    <!-- Home Screen -->
+    <string name="main_user">ПОЛЬЗОВАТЕЛЬ ZOOMRAD</string>
+    <string name="verified_customer">Подтвержденный клиент</string>
+    <string name="no_card_linked">Карта не привязана</string>
+    <string name="total_points">%s баллов</string>
+    <string name="cashback_balance">Баланс кешбэка ></string>
+    <string name="deposit">Вклад</string>
+    <string name="loan">Кредит</string>
+    <string name="payments">Платежи</string>
+    <string name="services">Услуги</string>
+    <string name="see_all">Все</string>
+    <string name="turn_on_geolocation">Включите геолокацию</string>
+    <string name="geolocation_needed">Это необходимо для работы сервиса</string>
+    <string name="turn_on">Включить</string>
+    <string name="currency_rates">Курс валют</string>
+    <string name="currency">Валюта</string>
+    <string name="buy">Покупка</string>
+    <string name="sell">Продажа</string>
+    <string name="no_data">Данные отсутствуют</string>
+    <string name="last_update">Последнее обновление: </string>
+    <string name="logout">Выход</string>
+    <string name="app_version">Версия %s</string>
+
+    <!-- Drawer Menu -->
+    <string name="menu_profile">Профиль</string>
+    <string name="menu_id">Идентификация</string>
+    <string name="menu_settings">Настройки</string>
+    <string name="menu_security">Безопасность</string>
+    <string name="menu_applications">Мои заявки</string>
+    <string name="menu_help">Помощь</string>
+    <string name="menu_share">Поделиться приложением</string>
+    <string name="menu_about">О приложении</string>
+
+    <!-- Bottom Navigation -->
+    <string name="nav_home">Главная</string>
+    <string name="nav_payments">Платежи</string>
+    <string name="nav_transfers">Переводы</string>
+    <string name="nav_monitoring">Мониторинг</string>
+    <string name="nav_services">Сервисы</string>
+
+    <!-- Settings & Language -->
+    <string name="notifications">Уведомления</string>
+    <string name="app_language">Язык приложения</string>
+    <string name="app_theme">Тема приложения</string>
+    <string name="quick_payment">Быстрый платеж</string>
+    <string name="monitoring">Мониторинг</string>
+    <string name="public_offer">Публичная оферта</string>
+    <string name="select_language">Выберите язык</string>
+
+    <!-- About Screen -->
+    <string name="about_version">Версия %s</string>
+    <string name="about_rate">Оценить приложение</string>
+    <string name="about_share_app">Поделиться программой</string>
+    <string name="open_link">Открыть ссылку</string>
+
+    <!-- Help Screen -->
+    <string name="help_online_chat">Онлайн чат</string>
+    <string name="help_call_bank">Позвонить в банк</string>
+    <string name="help_bank_map">Банк на карте</string>
+
+    <!-- Notification Screen -->
+    <string name="notif_voice">Голосовые уведомления</string>
+    <string name="notif_transfers">О переводах</string>
+    <string name="notif_auto_pay">О статусе автоплатежа</string>
+
+    <!-- Application Screen -->
+    <string name="no_applications">Заявок нет</string>
+    <string name="no_applications_desc">Все ваши заявки по различным услугам будут отображаться на этой странице.</string>
+
+    <!-- Settings Dialogs -->
+    <string name="theme_select">Выберите тему</string>
+    <string name="close">Закрыть</string>
+    <string name="lang_uz">O\'zbekcha</string>
+    <string name="lang_ru">Русский</string>
+    <string name="lang_en">English</string>
+    <string name="theme_system">Системная тема</string>
+    <string name="theme_dark">Темная тема</string>
+    <string name="theme_light">Светлая тема</string>
+
+    <!-- Login Screen -->
+    <string name="login_welcome">Добро пожаловать в Zoomrad</string>
+    <string name="login_subtitle">Введите номер телефона, чтобы продолжить</string>
+    <string name="login_phone_hint">Номер телефона</string>
+    <string name="login_button">Войти</string>
+
+    <!-- OTP Screen -->
+    <string name="otp_title">Продолжить</string>
+    <string name="otp_subtitle">Вам нужно подтвердить код</string>
+    <string name="otp_resend_text">Отправить код повторно </string>
+    <string name="otp_verify_button">Подтвердить</string>
+
+    <!-- App Lock Screen -->
+    <string name="lock_create_title">Создать пароль</string>
+    <string name="lock_confirm_title">Подтвердить пароль</string>
+    <string name="lock_enter_title">Введите код</string>
+    <string name="lock_reset_title">Новый пароль</string>
+    <string name="lock_create_desc">Установите 4-значный код для доступа к приложению</string>
+    <string name="lock_confirm_desc">Повторно введите код для подтверждения</string>
+    <string name="lock_enter_desc">Введите код доступа, чтобы продолжить</string>
+    <string name="lock_reset_desc">Введите новый 4-значный код</string>
+
+    <!-- KYC Screen -->
+    <string name="kyc_title">Подтверждение личности</string>
+    <string name="kyc_dialog_title">Выберите источник изображения</string>
+    <string name="kyc_dialog_desc">Откуда вы хотите взять селфи-фото?</string>
+    <string name="kyc_camera">Камера</string>
+    <string name="kyc_gallery">Галерея</string>
+    <string name="kyc_pending_desc">Ваши документы проверяются. Этот процесс может занять до 24 часов.</string>
+    <string name="kyc_status_verified">Подтверждено</string>
+    <string name="kyc_status_pending">На рассмотрении</string>
+    <string name="kyc_status_rejected">Отклонено</string>
+    <string name="kyc_status_not_submitted">Еще не подано</string>
+    <string name="kyc_rejection_reason">Причина: %s</string>
+    <string name="kyc_passport_info">Паспортные данные</string>
+    <string name="kyc_series">Серия</string>
+    <string name="kyc_number">Номер</string>
+    <string name="kyc_birth_date">Дата рождения (ГГГГ-ММ-ДД)</string>
+    <string name="kyc_selfie_hint">Селфи (в овальной форме)</string>
+    <string name="kyc_submit_button">Отправить на проверку</string>
+
+    <!-- Profile Screen -->
+    <string name="profile_title">Мои данные</string>
+    <string name="profile_edit_title">Редактировать профиль</string>
+    <string name="profile_welcome_title">Добро пожаловать! Введите свои данные</string>
+    <string name="profile_name_label">Полное имя</string>
+    <string name="profile_save">Сохранить</string>
+    <string name="profile_cancel">Отмена</string>
+    <string name="profile_name_error">Пожалуйста, введите свое имя</string>
+    <string name="profile_label_fio">Ф.И.О:</string>
+    <string name="profile_label_phone">Телефон:</string>
+    <string name="profile_label_reg_date">Дата регистрации:</string>
+    <string name="profile_label_id">ID:</string>
+    <string name="profile_label_status">Статус:</string>
+    <string name="profile_status_verified">Подтверждено</string>
+    <string name="profile_status_not_verified">Не подтверждено</string>
+    <string name="profile_kyc_button">Пройти идентификацию</string>
+    <string name="profile_unknown">Неизвестно</string>
+
+    <!-- Loan Screens -->
+    <string name="loan_apply_title">Получить кредит</string>
+    <string name="loan_amount_label">Сумма</string>
+    <string name="loan_term_label">Срок: %d мес</string>
+    <string name="loan_receiver_card">Карта получателя</string>
+    <string name="loan_apply_button">Подтвердить</string>
+    <string name="loan_apply_success">Кредит успешно оформлен</string>
+    <string name="loan_repay_title">Пополнение кредита</string>
+    <string name="loan_repay_success">Платеж успешно выполнен</string>
+    <string name="loan_balance_label">Баланс: %s</string>
+    <string name="currency_som">сум</string>
+
+    <!-- Monitoring Screen -->
+    <string name="monitor_title">Мониторинг</string>
+    <string name="monitor_history">История</string>
+    <string name="monitor_incomes">Поступления</string>
+    <string name="monitor_expenses">Расходы</string>
+
+    <!-- Payments Screen -->
+    <string name="payments_title">Платежи</string>
+    <string name="payments_search_hint">Поиск</string>
+    <string name="payments_all_services">Все услуги</string>
+
+    <!-- Make Payment Screen -->
+    <string name="pay_card_label">Карта оплаты</string>
+    <string name="pay_account_label">Номер счета / Телефон</string>
+    <string name="pay_account_hint">Ввод</string>
+    <string name="pay_amount_label">Сумма платежа</string>
+    <string name="pay_amount_hint">0 сум</string>
+    <string name="pay_button">Оплатить</string>
+    <string name="pay_fill_all_fields">Заполните все поля</string>
+
+    <!-- Transfer Screen -->
+    <string name="transfer_card_title">Перевод на карту</string>
+    <string name="transfer_card_number_hint">Номер карты</string>
+    <string name="transfer_amount_label">Сумма перевода</string>
+    <string name="transfer_amount_hint">0 сум</string>
+    <string name="transfer_to_my_card">Перевод на\nмою карту</string>
+    <string name="transfer_select_recipient">Выбор\nполучателя</string>
+    <string name="transfer_continue">Продолжить</string>
+    <string name="transfer_terms_agreement">Нажимая \"Продолжить\", вы выражаете свое согласие с условиями оферты</string>
+    <string name="transfer_error_no_card">У вас нет карты</string>
+    <string name="transfer_error_card_length">Номер карты должен состоять из 16 цифр</string>
+    <string name="transfer_error_min_amount">Минимальная сумма перевода 5000 сум</string>
+    <string name="transfer_error_no_phone">Номер не найден, необходимо ввести!</string>
+    <string name="transfer_not_found">Не найдено</string>
+
+    <!-- Cards Screen -->
+    <string name="cards_title">Мои карты</string>
+    <string name="cards_add_title">Добавить карту</string>
+    <string name="cards_attach_title">Добавить карту</string>
+    <string name="cards_number_hint">Номер карты</string>
+    <string name="cards_sort_default">По умолчанию</string>
+    <string name="cards_sort_bal_asc">Баланс (Возрастание)</string>
+    <string name="cards_sort_bal_desc">Баланс (Убывание)</string>
+    <string name="cards_sort_name">По имени</string>
+    <string name="cards_filter_all">Все</string>
+    <string name="cards_add_new">Новая карта</string>
+    <string name="cards_add_new_desc">Добавить новую карту</string>
+    <string name="cards_add_all_aloqa">Все карты Aloqabank</string>
+    <string name="cards_add_all_aloqa_desc">Загрузите все сразу</string>
+    <string name="cards_add_virtual">Виртуальная карта</string>
+    <string name="cards_add_virtual_desc">Открыть виртуальную карту</string>
+
+    <string name="cards_bank_uzcard">Uzcard Bank</string>
+    <string name="cards_bank_humo">Humo Bank</string>
+    <string name="cards_bank_visa">Visa Bank</string>
+    <string name="cards_filter_visa">Visa</string>
+    <string name="cards_filter_uzcard">Uzcard</string>
+    <string name="cards_filter_humo">Humo</string>
+
+    <!-- Additional Services Screen -->
+    <string name="services_additional_title">Дополнительно</string>
+    <string name="services_search_placeholder">Название услуги</string>
+    <string name="services_my_loans">Мои кредиты</string>
+    <string name="loan_id_label">Кредит #%s</string>
+    <string name="loan_status_active">Активен</string>
+    <string name="loan_status_closed">Закрыт</string>
+    <string name="loan_remaining_debt">Остаток долга</string>
+    <string name="loan_next_payment">Следующий платеж</string>
+
+    <!-- Service Names -->
+    <string name="service_online_payment">Онлайн оплата Alipay+</string>
+    <string name="service_kids_card">Kids Card</string>
+    <string name="service_savings">Сбережения</string>
+    <string name="service_moneysend">Mastercard MoneySend</string>
+    <string name="service_investment">Инвестиции</string>
+    <string name="service_travel_insurance">Страхование путешествий</string>
+    <string name="service_identification">Идентификация</string>
+    <string name="service_get_loan">Получить кредит</string>
+    <string name="service_my_cards">Мои карты</string>
+    <string name="service_monitoring">Мониторинг</string>
+    <string name="service_payments">Платежи</string>
+    <string name="service_transfer">Перевод</string>
+    <string name="service_my_home">Мой дом</string>
+    <string name="service_my_car">Мой автомобиль</string>
+    <string name="service_face_pay">Face Pay</string>
+    <string name="service_visa_direct">Visa Direct</string>
+</resources>

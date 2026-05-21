@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Zoomrad</string>
+    <string name="settings">Sozlamalar</string>
+    <string name="notifications">Xabarnoma</string>
+    <string name="app_language">Ilova tili</string>
+    <string name="app_theme">Ilova mavzusi</string>
+    <string name="quick_payment">Tezkor to\'lov</string>
+    <string name="monitoring">Monitoring</string>
+    <string name="public_offer">Ommaviy oferta</string>
+    <string name="select_language">Tilni tanlang</string>
+
+    <!-- Home Screen -->
+    <string name="main_user">ZOOMRAD FOYDALANUVCHISI</string>
+    <string name="verified_customer">Tasdiqlangan mijoz</string>
+    <string name="no_card_linked">Karta biriktirilmagan</string>
+    <string name="total_points">%s ballar</string>
+    <string name="cashback_balance">Keshbek balansi ></string>
+    <string name="deposit">Omonat</string>
+    <string name="loan">Kredit</string>
+    <string name="payments">To\'lovlar</string>
+    <string name="services">Xizmatlar</string>
+    <string name="see_all">Barchasi</string>
+    <string name="turn_on_geolocation">Geolokatsiyani yoqing</string>
+    <string name="geolocation_needed">Bu xizmat ishlashi uchun zarur</string>
+    <string name="turn_on">Yoqish</string>
+    <string name="currency_rates">Valyuta kursi</string>
+    <string name="currency">Valyuta</string>
+    <string name="buy">Sotib olish</string>
+    <string name="sell">Sotish</string>
+    <string name="no_data">Ma\'lumotlar mavjud emas</string>
+    <string name="last_update">Oxirgi yangilanish: </string>
+    <string name="logout">Chiqish</string>
+    <string name="app_version">Versiya %s</string>
+    <string name="cash_back">Kesh bek ballar</string>
+
+    <!-- Drawer Menu -->
+    <string name="menu_profile">Profil</string>
+    <string name="menu_id">Identifikatsiya</string>
+    <string name="menu_settings">Sozlamalar</string>
+    <string name="menu_security">Xavfsizlik</string>
+    <string name="menu_applications">Mening arizalarim</string>
+    <string name="menu_help">Yordam</string>
+    <string name="menu_share">Dasturni ulashing</string>
+    <string name="menu_about">Ilova haqida</string>
+
+
+</resources>

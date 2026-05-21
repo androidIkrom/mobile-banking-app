@@ -17,4 +17,9 @@ interface CardApiService {
     suspend fun attachCard(
         @Body request: AttachCardRequest
     ): Response<BaseResponse<CardData>>
+
+    @POST("/api/v1/cards/{id}/main")
+    suspend fun setMainCard(
+        @retrofit2.http.Path("id") id: String
+    ): Response<BaseResponse<Unit>>
 }

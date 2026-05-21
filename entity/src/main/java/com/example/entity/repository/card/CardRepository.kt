@@ -5,4 +5,5 @@ import com.example.entity.model.card.CardData
 interface CardRepository {
     suspend fun getCards(): Result<List<CardData>>
     suspend fun attachCard(cardNumber: String): Result<CardData>
+    suspend fun setMainCard(cardId: String): Result<Unit>
 }

@@ -1,5 +1,9 @@
 package com.example.zoomrad.presentation.screens.tabs.home
 
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -12,19 +16,22 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
@@ -42,7 +49,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -51,15 +60,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.entity.model.card.CardData
 import com.example.entity.model.payment.PaymentProvider
@@ -67,10 +77,10 @@ import com.example.presenter.vm.cards.CardViewModel
 import com.example.presenter.vm.payment.PaymentViewModel
 import com.example.presenter.vm.transaction.TransactionViewModel
 import com.example.zoomrad.R
+import com.example.zoomrad.presentation.navigation.BottomNavItem
 import com.example.zoomrad.presentation.screens.tabs.service.AdditionalServiceItemData
 import com.example.zoomrad.presentation.screens.tabs.service.allServices
 import com.example.zoomrad.ui.theme.GreenPrimary
-import com.example.zoomrad.ui.theme.NotificationRed
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import java.util.Locale
@@ -81,22 +91,42 @@ fun HomeScreen(
     cardViewModel: CardViewModel = hiltViewModel(),
     paymentViewModel: PaymentViewModel = hiltViewModel(),
     transactionViewModel: TransactionViewModel = hiltViewModel(),
-    onMenuClick: () -> Unit
+    exchangeViewModel: com.example.presenter.vm.exchange.ExchangeViewModel = hiltViewModel(),
+    onMenuClick: () -> Unit,
 ) {
     val cards by cardViewModel.cards.collectAsState()
     val mainCard = cards.find { it.isMain } ?: cards.firstOrNull()
 
     val paymentState by paymentViewModel.container.stateFlow.collectAsState()
+    val exchangeState by exchangeViewModel.container.stateFlow.collectAsState()
     val transactions by transactionViewModel.transactions.collectAsState()
 
     val totalPoints = remember(transactions) {
         transactions.sumOf { it.amount }
     }
 
+    val context = LocalContext.current
+    var hasLocationPermission by remember {
+        mutableStateOf(
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        )
+    }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        hasLocationPermission = (permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true) ||
+                (permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true)
+    }
+
     LaunchedEffect(Unit) {
         cardViewModel.fetchCards()
         paymentViewModel.fetchProviders()
         transactionViewModel.fetchTransactions()
+        exchangeViewModel.fetchExchangeRates()
     }
 
     Column(
@@ -107,12 +137,18 @@ fun HomeScreen(
         TopAppBar(onMenuClick)
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             item { BalanceCard(navController, mainCard) }
             item { PointsAndCashbackRow(totalPoints) }
-            item { QuickActionsRow() }
+            item {
+                QuickActionsRow { name ->
+                    if (name == "omonat")
+                        navController.navigate(BottomNavItem.Otkazma.route)
+                    if (name == "kredit")
+                        navController.navigate("apply_loan")
+                }
+            }
             item {
                 PaymentsSection(
                     providers = paymentState.providers,
@@ -134,12 +170,57 @@ fun HomeScreen(
                     }
                 )
             }
-            item { GeolocationBanner() }
-            item { CurrencyRatesSection() }
+            if (!hasLocationPermission) {
+                item {
+                    GeolocationBanner {
+                        permissionLauncher.launch(
+                            arrayOf(
+                                Manifest.permission.ACCESS_FINE_LOCATION,
+                                Manifest.permission.ACCESS_COARSE_LOCATION
+                            )
+                        )
+                    }
+                }
+            }
+            item { CurrencyRatesSection(exchangeState.rates) }
         }
     }
 }
 
+fun getProviderIcon(name: String): Int {
+    return when {
+        name.contains("Beeline", ignoreCase = true) -> R.drawable.beeline
+        name.contains("Ucell", ignoreCase = true) -> R.drawable.ucell
+        name.contains("UMS", ignoreCase = true) -> R.drawable.ums
+        name.contains("Uzmobile", ignoreCase = true) -> R.drawable.uzmobile
+        name.contains("Perfectum", ignoreCase = true) -> R.drawable.perfectum
+        name.contains("лектр", ignoreCase = true) -> R.drawable.energy
+        name.contains("Sarkor", ignoreCase = true) -> R.drawable.sarkor
+        name.contains("Komunal", ignoreCase = true) -> R.drawable.comunal
+        name.contains("газ", ignoreCase = true) -> R.drawable.gas
+        name.contains("uztelecom", ignoreCase = true) -> R.drawable.uzmobile
+        else -> R.drawable.soliq
+    }
+}
+
+fun getServiceIcon(titleRes: Int): Int {
+    return when (titleRes) {
+        R.string.service_get_loan -> R.drawable.loan
+        R.string.service_my_cards -> R.drawable.cards
+        R.string.service_payments -> R.drawable.ic_payment
+        R.string.service_transfer -> R.drawable.ic_transfer
+        R.string.service_my_home -> R.drawable.ic_home
+        R.string.service_online_payment -> R.drawable.payment
+        R.string.service_face_pay -> R.drawable.face_pay
+        R.string.service_monitoring -> R.drawable.ic_history
+        R.string.service_identification -> R.drawable.face_pay
+        R.string.service_kids_card -> R.drawable.kids
+        R.string.service_moneysend -> R.drawable.send
+        else -> {
+            R.drawable.ic_deposit
+        }
+    }
+}
 
 @Composable
 fun DrawerContent(
@@ -165,7 +246,7 @@ fun DrawerContent(
                     ),
                     shape = RoundedCornerShape(bottomEnd = 40.dp)
                 )
-                .clickable { onItemClick("Profil") }
+                .clickable { onItemClick("profile") }
                 .padding(24.dp)
         ) {
             Column(
@@ -177,9 +258,10 @@ fun DrawerContent(
                         .size(68.dp)
                         .clip(CircleShape)
                         .background(Color.White)
+                        .padding(8.dp)
                 ) {
                     Image(
-                        painter = painterResource(R.drawable.ic_profile),
+                        painter = painterResource(R.drawable.ic_pr),
                         contentDescription = "ic_user",
                         modifier = Modifier
                             .fillMaxSize()
@@ -189,7 +271,7 @@ fun DrawerContent(
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     text = userProfile?.fullName?.uppercase(Locale.getDefault())
-                        ?: "ZOOMRAD FOYDALANUVCHISI",
+                        ?: stringResource(R.string.main_user),
                     color = Color.White,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
@@ -217,7 +299,7 @@ fun DrawerContent(
                             )
                             Spacer(modifier = Modifier.width(6.dp))
                             Text(
-                                text = "Tasdiqlangan mijoz",
+                                text = stringResource(R.string.verified_customer),
                                 color = Color.White,
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.Bold
@@ -231,19 +313,20 @@ fun DrawerContent(
         Spacer(modifier = Modifier.height(8.dp))
 
         val menuItems = listOf(
-            DrawerItemData("Profil", Icons.Default.Person),
-            DrawerItemData("Sozlamalar", Icons.Default.Settings),
-            DrawerItemData("Xavfsizlik", Icons.Default.Lock),
-            DrawerItemData("Mening arizalarim", Icons.Default.Info),
-            DrawerItemData("Yordam", Icons.Default.Info),
-            DrawerItemData("Dasturni ulashing", Icons.Default.Share),
-            DrawerItemData("Ilova haqida", Icons.Default.Info)
+            Triple("profile", R.string.menu_profile, Icons.Default.Person),
+            Triple("kyc", R.string.menu_id, Icons.Default.Person),
+            Triple("settings", R.string.menu_settings, Icons.Default.Settings),
+            Triple("security", R.string.menu_security, Icons.Default.Lock),
+            Triple("applications", R.string.menu_applications, Icons.Default.Email),
+            Triple("help", R.string.menu_help, Icons.Default.Info),
+            Triple("share", R.string.menu_share, Icons.Default.Share),
+            Triple("about", R.string.menu_about, Icons.Default.Info)
         )
 
         LazyColumn(modifier = Modifier.weight(1f)) {
-            items(menuItems) { item ->
-                DrawerItem(item) {
-                    onItemClick(item.title)
+            items(menuItems) { (id, titleRes, icon) ->
+                DrawerItem(DrawerItemData(stringResource(titleRes), icon, id)) {
+                    onItemClick(id)
                 }
             }
         }
@@ -274,7 +357,7 @@ fun DrawerContent(
                 }
                 Spacer(modifier = Modifier.width(16.dp))
                 Text(
-                    text = "Chiqish",
+                    text = stringResource(R.string.logout),
                     color = MaterialTheme.colorScheme.onSurface,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold
@@ -282,7 +365,7 @@ fun DrawerContent(
             }
             Spacer(modifier = Modifier.height(12.dp))
             Text(
-                text = "Versiya 2.1.893 (893 liveGoogle)",
+                text = stringResource(R.string.app_version, "2.1.893"),
                 color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
                 fontSize = 12.sp
             )
@@ -290,7 +373,7 @@ fun DrawerContent(
     }
 }
 
-data class DrawerItemData(val title: String, val icon: ImageVector)
+data class DrawerItemData(val title: String, val icon: ImageVector, val id: String = "")
 
 @Composable
 fun DrawerItem(item: DrawerItemData, onClick: () -> Unit) {
@@ -312,7 +395,7 @@ fun DrawerItem(item: DrawerItemData, onClick: () -> Unit) {
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    imageVector = item.icon,
+                    imageVector = if (item.id == "kyc") Icons.Default.Face else item.icon ,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(22.dp)
@@ -377,19 +460,19 @@ fun IconContainer(iconRes: Int, onClick: () -> Unit = {}) {
 fun BadgedIconContainer(iconRes: Int, badgeCount: String) {
     Box(contentAlignment = Alignment.TopEnd) {
         IconContainer(iconRes)
-        Box(
-            modifier = Modifier
-                .offset(x = 4.dp, y = (-4).dp)
-                .background(NotificationRed, CircleShape)
-                .padding(horizontal = 4.dp, vertical = 0.dp)
-        ) {
-            Text(
-                text = badgeCount,
-                color = Color.White,
-                fontSize = 8.sp,
-                fontWeight = FontWeight.Bold
-            )
-        }
+//        Box(
+//            modifier = Modifier
+//                .offset(x = 4.dp, y = (-4).dp)
+//                .background(NotificationRed, CircleShape)
+//                .padding(horizontal = 4.dp, vertical = 0.dp)
+//        ) {
+//            Text(
+//                text = badgeCount,
+//                color = Color.White,
+//                fontSize = 8.sp,
+//                fontWeight = FontWeight.Bold
+//            )
+//        }
     }
 }
 
@@ -398,9 +481,10 @@ fun BalanceCard(navController: NavController, card: CardData?) {
     Card(
         shape = RoundedCornerShape(24.dp),
         modifier = Modifier
+            .padding(horizontal = 16.dp)
             .fillMaxWidth()
             .clickable { navController.navigate("cards") },
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
     ) {
         Box(
             modifier = Modifier
@@ -478,6 +562,7 @@ fun formatMoney(amount: Double): String {
 fun PointsAndCashbackRow(points: Double) {
     Row(
         modifier = Modifier
+            .padding(horizontal = 16.dp)
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(16.dp))
             .padding(16.dp),
@@ -493,14 +578,14 @@ fun PointsAndCashbackRow(points: Double) {
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
-                text = "${points.toDouble()} ballar",
+                text = "$points ballar",
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 15.sp,
                 color = MaterialTheme.colorScheme.onSurface
             )
         }
         Text(
-            text = "Keshbek balansi >",
+            text = stringResource(R.string.cashback_balance),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             fontSize = 14.sp
         )
@@ -508,22 +593,31 @@ fun PointsAndCashbackRow(points: Double) {
 }
 
 @Composable
-fun QuickActionsRow() {
+fun QuickActionsRow(onClick: (String) -> Unit) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        QuickActionCard("Omonat", R.drawable.ic_deposit, Modifier.weight(1f))
-        QuickActionCard("Kredit", R.drawable.ic_deposit, Modifier.weight(1f))
+        QuickActionCard("Omonat", R.drawable.ic_deposit, Modifier.weight(1f)) {
+            onClick("omonat")
+        }
+        QuickActionCard("Kredit", R.drawable.loan, Modifier.weight(1f)) {
+            onClick("kredit")
+        }
     }
 }
 
 @Composable
-fun QuickActionCard(title: String, iconRes: Int, modifier: Modifier) {
+fun QuickActionCard(title: String, iconRes: Int, modifier: Modifier, onClick: () -> Unit = {}) {
     Row(
         modifier = modifier
             .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(16.dp))
-            .padding(16.dp),
+            .padding(16.dp)
+            .clickable {
+
+            },
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(
@@ -536,7 +630,7 @@ fun QuickActionCard(title: String, iconRes: Int, modifier: Modifier) {
                 painter = painterResource(iconRes),
                 contentDescription = null,
                 tint = Color.White,
-                modifier = Modifier.size(20.dp)
+                modifier = Modifier.size(30.dp)
             )
         }
         Spacer(modifier = Modifier.width(12.dp))
@@ -554,16 +648,19 @@ fun PaymentsSection(
     providers: List<PaymentProvider>,
     onProviderClick: (PaymentProvider) -> Unit
 ) {
+    Text(modifier = Modifier.padding(start = 24.dp), text = stringResource(R.string.payments),fontWeight = FontWeight.Bold,
+        fontSize = 18.sp,
+        color = MaterialTheme.colorScheme.onSurface)
     LazyRow(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.padding(top = 16.dp).fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        items(providers) { provider ->
+        itemsIndexed(providers) { index,provider ->
             PaymentCard(
                 title = provider.name,
+                index = index,
                 subtitle = "To'lov",
                 logoUrl = provider.logoUrl,
-                modifier = Modifier.width(160.dp),
                 onClick = { onProviderClick(provider) }
             )
         }
@@ -573,13 +670,17 @@ fun PaymentsSection(
 @Composable
 fun PaymentCard(
     title: String,
+    index: Int,
     subtitle: String,
     logoUrl: String?,
-    modifier: Modifier,
     onClick: () -> Unit
 ) {
+    val fallBackPainter = painterResource(remember(title) {
+        getProviderIcon(title)
+    })
     Column(
-        modifier = modifier
+        modifier = Modifier
+            .padding(start = if (index == 0)16.dp else 0.dp).width(160.dp)
             .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(16.dp))
             .clickable { onClick() }
             .padding(16.dp)
@@ -600,10 +701,10 @@ fun PaymentCard(
                 .fillMaxWidth()
                 .height(60.dp),
             contentScale = ContentScale.Fit,
-            error = painterResource(R.drawable.ic_deposit),
-            placeholder = painterResource(R.drawable.ic_deposit),
-            fallback = painterResource(R.drawable.ic_deposit),
-            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
+            error = fallBackPainter,
+            placeholder = fallBackPainter,
+            fallback = fallBackPainter,
+//            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
         )
     }
 }
@@ -611,20 +712,20 @@ fun PaymentCard(
 @Composable
 fun ServicesHeader() {
     Row(
-        modifier = Modifier
+        modifier = Modifier.padding(horizontal = 24.dp)
             .fillMaxWidth()
             .padding(top = 8.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "Xizmatlar",
+            text = stringResource(R.string.services),
             fontWeight = FontWeight.Bold,
             fontSize = 18.sp,
             color = MaterialTheme.colorScheme.onSurface
         )
         Text(
-            text = "Barchasi",
+            text = stringResource(R.string.see_all),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             fontSize = 14.sp
         )
@@ -640,10 +741,10 @@ fun ServicesLazyRow(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        items(services) { service ->
+        itemsIndexed(services) { index,service ->
             ServiceCard(
-                title = service.title,
-                modifier = Modifier.width(140.dp),
+                service = service,
+                index = index,
                 onClick = { onServiceClick(service) }
             )
         }
@@ -651,9 +752,13 @@ fun ServicesLazyRow(
 }
 
 @Composable
-fun ServiceCard(title: String, modifier: Modifier, onClick: () -> Unit) {
+fun ServiceCard(service: AdditionalServiceItemData, index: Int, onClick: () -> Unit) {
+    val title = stringResource(service.titleRes)
+    val iconRes = remember(service.titleRes) { getServiceIcon(titleRes = service.titleRes) }
     Column(
-        modifier = modifier
+        modifier = Modifier
+            .padding(start = if (index == 0) 16.dp else 0.dp)
+            .width(140.dp)
             .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(16.dp))
             .clickable { onClick() }
             .padding(12.dp),
@@ -670,18 +775,24 @@ fun ServiceCard(title: String, modifier: Modifier, onClick: () -> Unit) {
         )
         Spacer(modifier = Modifier.height(12.dp))
         Image(
-            painter = painterResource(R.drawable.ic_deposit),
+            painter = painterResource(iconRes),
             contentDescription = null,
-            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
-            modifier = Modifier.size(50.dp)
+            modifier = Modifier
+                .background(
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = CircleShape
+                )
+                .size(60.dp)
+                .padding(6.dp),
+            colorFilter = ColorFilter.tint(Color.White),
         )
     }
 }
 
 @Composable
-fun GeolocationBanner() {
+fun GeolocationBanner(onTurnOnCLick: () -> Unit) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
@@ -691,41 +802,55 @@ fun GeolocationBanner() {
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "Включите геолокацию",
+                    text = stringResource(R.string.turn_on_geolocation),
                     fontWeight = FontWeight.Bold,
                     fontSize = 15.sp,
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
-                    text = "Это необходимо для работы сервиса",
+                    text = stringResource(R.string.geolocation_needed),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 12.sp
                 )
                 Spacer(modifier = Modifier.height(12.dp))
                 Button(
-                    onClick = { },
+                    onClick = { onTurnOnCLick() },
                     colors = ButtonDefaults.buttonColors(containerColor = GreenPrimary),
                     shape = RoundedCornerShape(8.dp),
                     contentPadding = PaddingValues(horizontal = 20.dp, vertical = 6.dp),
                     modifier = Modifier.height(32.dp)
                 ) {
-                    Text("Yoqish", color = Color.White, fontSize = 13.sp)
+                    Text(stringResource(R.string.turn_on), color = Color.White, fontSize = 13.sp)
                 }
             }
-            Image(
-                painter = painterResource(R.drawable.ic_deposit),
-                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
+            Icon(
+                imageVector = Icons.Default.LocationOn,
                 contentDescription = null,
+                tint = Color.Gray,
                 modifier = Modifier.size(70.dp)
             )
         }
     }
 }
 
+fun getIconResource(title: String): Int {
+    return when (title) {
+        "USS" -> R.drawable.flag_uzb
+        "USD" -> R.drawable.flag_usd
+        "EUR" -> R.drawable.flag_eur
+        "RUB" -> R.drawable.flag_russia
+        "GBP" -> R.drawable.flag_gbp
+        "CNY" -> R.drawable.flag_cny
+        else -> {
+            R.drawable.ic_payment
+        }
+    }
+}
+
 @Composable
-fun CurrencyRatesSection() {
+fun CurrencyRatesSection(rates: List<com.example.entity.model.exchange.ExchangeRate>) {
     Column(
-        modifier = Modifier
+        modifier = Modifier.padding(horizontal = 16.dp)
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(16.dp))
             .padding(16.dp)
@@ -735,13 +860,13 @@ fun CurrencyRatesSection() {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = "Valyuta kursi",
+                text = stringResource(R.string.currency_rates),
                 fontWeight = FontWeight.Bold,
                 fontSize = 16.sp,
                 color = MaterialTheme.colorScheme.onSurface
             )
             Text(
-                text = "Barchasi",
+                text = stringResource(R.string.see_all),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 14.sp
             )
@@ -750,18 +875,18 @@ fun CurrencyRatesSection() {
 
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Text(
-                "Valyuta",
+                stringResource(R.string.currency),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 12.sp,
                 modifier = Modifier.weight(1f)
             )
             Text(
-                "Sotib olish",
+                stringResource(R.string.buy),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 12.sp
             )
             Spacer(modifier = Modifier.width(24.dp))
-            Text("Sotish", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
+            Text(stringResource(R.string.sell), color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
         }
 
         HorizontalDivider(
@@ -770,12 +895,33 @@ fun CurrencyRatesSection() {
             thickness = 0.5.dp
         )
 
-        CurrencyItem("EUR", "13 500", "14 500", R.drawable.ic_deposit)
-        CurrencyItem("USD", "12 080", "12 150", R.drawable.ic_deposit, "10 ↓", "20 ↓")
+        rates.forEach { rate ->
+            CurrencyItem(
+                code = rate.currency,
+                buy = formatMoney(rate.buy),
+                sell = formatMoney(rate.sell),
+                flagRes = getIconResource(rate.currency)
+            )
+        }
+
+        if (rates.isEmpty()) {
+            Text(
+                text = stringResource(R.string.no_data),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp),
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
 
         Spacer(modifier = Modifier.height(8.dp))
+        val lastUpdate = rates.firstOrNull()?.updatedAt?.let {
+            it.take(10).replace("-", ".")
+        } ?: stringResource(R.string.no_data)
+
         Text(
-            text = "Oxirgi yangilanish: 14.04.2026",
+            text = stringResource(R.string.last_update) + lastUpdate,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             fontSize = 11.sp
         )
@@ -830,11 +976,11 @@ fun CurrencyItem(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun HomeScreenPreview() {
-    val navController = rememberNavController()
-    HomeScreen(navController) {
-
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun HomeScreenPreview() {
+//    val navController = rememberNavController()
+//    HomeScreen(navController) {
+//
+//    }
+//}

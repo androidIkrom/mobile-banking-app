@@ -39,12 +39,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.presenter.vm.auth.AuthViewModel
+import com.example.zoomrad.R
 import kotlinx.coroutines.delay
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
@@ -105,7 +107,7 @@ fun VerifyOtpScreen(
         Spacer(modifier = Modifier.height(32.dp))
 
         Text(
-            text = "Continue",
+            text = stringResource(R.string.otp_title),
             fontSize = 32.sp,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onBackground
@@ -114,7 +116,7 @@ fun VerifyOtpScreen(
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "You need to verify code",
+            text = stringResource(R.string.otp_subtitle),
             fontSize = 16.sp,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             lineHeight = 22.sp
@@ -156,7 +158,7 @@ fun VerifyOtpScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Отправить код повторно ",
+                text = stringResource(R.string.otp_resend_text),
                 fontSize = 14.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -187,7 +189,11 @@ fun VerifyOtpScreen(
                     color = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(24.dp)
                 )
             } else {
-                Text(text = "Verify", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                Text(
+                    text = stringResource(R.string.otp_verify_button),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold
+                )
             }
         }
     }

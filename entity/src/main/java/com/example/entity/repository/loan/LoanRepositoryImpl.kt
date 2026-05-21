@@ -10,19 +10,25 @@ import javax.inject.Inject
 class LoanRepositoryImpl @Inject constructor(
     private val api: LoanApiService
 ) : LoanRepository {
-    override suspend fun getLoans(): Result<List<LoanData>> {
-        return api.getLoans().toApiResult().map { it.data ?: emptyList() }
+    override suspend fun getLoans(): Result<List<LoanData>> = try {
+        api.getLoans().toApiResult().map { it.data ?: emptyList() }
+    } catch (e: Exception) {
+        Result.failure(e)
     }
 
-    override suspend fun applyLoan(request: ApplyLoanRequest): Result<LoanData> {
-        return api.applyLoan(request).toApiResult().mapCatching { 
+    override suspend fun applyLoan(request: ApplyLoanRequest): Result<LoanData> = try {
+        api.applyLoan(request).toApiResult().mapCatching { 
             it.data ?: throw Exception("Ma'lumot topilmadi")
         }
+    } catch (e: Exception) {
+        Result.failure(e)
     }
 
-    override suspend fun repayLoan(id: String, request: RepayLoanRequest): Result<LoanData> {
-        return api.repayLoan(id, request).toApiResult().mapCatching { 
+    override suspend fun repayLoan(id: String, request: RepayLoanRequest): Result<LoanData> = try {
+        api.repayLoan(id, request).toApiResult().mapCatching { 
             it.data ?: throw Exception("Ma'lumot topilmadi")
         }
+    } catch (e: Exception) {
+        Result.failure(e)
     }
 }

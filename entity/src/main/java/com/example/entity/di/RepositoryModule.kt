@@ -43,4 +43,10 @@ internal interface RepositoryModule {
 
     @Binds
     fun bindLoanRepository(loanRepositoryImpl: LoanRepositoryImpl): LoanRepository
+
+    @Binds
+    fun bindExchangeRepository(impl: com.example.entity.repository.exchange.ExchangeRepositoryImpl): com.example.entity.repository.exchange.ExchangeRepository
+
+    @Binds
+    fun bindKycRepository(impl: com.example.entity.repository.kyc.KycRepositoryImpl): com.example.entity.repository.kyc.KycRepository
 }

@@ -41,6 +41,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -48,6 +49,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.presenter.vm.cards.CardViewModel
 import com.example.presenter.vm.loan.LoanViewModel
+import com.example.zoomrad.R
 import com.example.zoomrad.presentation.screens.tabs.home.formatAmount
 import org.orbitmvi.orbit.compose.collectSideEffect
 
@@ -80,7 +82,7 @@ fun RepayLoanScreen(
     loanViewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
             is LoanViewModel.LoanSideEffect.LoanRepaid -> {
-                Toast.makeText(context, "To'lov muvaffaqiyatli amalga oshirildi", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, context.getString(R.string.loan_repay_success), Toast.LENGTH_SHORT).show()
                 navController.popBackStack()
             }
             is LoanViewModel.LoanSideEffect.ShowError -> {
@@ -93,7 +95,7 @@ fun RepayLoanScreen(
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("Kredit so'ndirish", fontWeight = FontWeight.Bold) },
+                title = { Text(stringResource(R.string.loan_repay_title), fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, null)
@@ -117,17 +119,17 @@ fun RepayLoanScreen(
             OutlinedTextField(
                 value = amount,
                 onValueChange = { if (it.all { char -> char.isDigit() }) amount = it },
-                label = { Text("To'lov summasi") },
+                label = { Text(stringResource(R.string.pay_amount_label)) },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
-                suffix = { Text("so'm") }
+                suffix = { Text(stringResource(R.string.currency_som)) }
             )
 
             Spacer(modifier = Modifier.height(24.dp))
 
             if (cards.isNotEmpty()) {
                 Text(
-                    text = "To'lov kartasi",
+                    text = stringResource(R.string.pay_card_label),
                     modifier = Modifier.fillMaxWidth(),
                     fontWeight = FontWeight.Medium,
                     fontSize = 14.sp
@@ -157,7 +159,7 @@ fun RepayLoanScreen(
                             Spacer(modifier = Modifier.width(8.dp))
                             Column {
                                 Text(card.type, fontWeight = FontWeight.Bold)
-                                Text("Balans: ${formatAmount(card.balance)}", fontSize = 12.sp, color = Color.Gray)
+                                Text(stringResource(R.string.loan_balance_label, formatAmount(card.balance)), fontSize = 12.sp, color = Color.Gray)
                             }
                         }
                     }
@@ -181,7 +183,7 @@ fun RepayLoanScreen(
                 if (loanState.isLoading) {
                     CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
                 } else {
-                    Text("To'lash", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                    Text(stringResource(R.string.pay_button), fontWeight = FontWeight.Bold, fontSize = 16.sp)
                 }
             }
         }

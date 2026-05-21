@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -21,6 +22,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.presenter.vm.cards.CardViewModel
 import com.example.presenter.vm.loan.LoanViewModel
+import com.example.zoomrad.R
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
 
@@ -52,7 +54,7 @@ fun ApplyLoanScreen(
     loanViewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
             is LoanViewModel.LoanSideEffect.LoanApplied -> {
-                Toast.makeText(context, "Kredit muvaffaqiyatli rasmiylashtirildi", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, context.getString(R.string.loan_apply_success), Toast.LENGTH_SHORT).show()
                 navController.popBackStack()
             }
             is LoanViewModel.LoanSideEffect.ShowError -> {
@@ -65,7 +67,7 @@ fun ApplyLoanScreen(
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("Kredit olish", fontWeight = FontWeight.Bold) },
+                title = { Text(stringResource(R.string.loan_apply_title), fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, null)
@@ -89,16 +91,16 @@ fun ApplyLoanScreen(
             OutlinedTextField(
                 value = amount,
                 onValueChange = { if (it.all { char -> char.isDigit() }) amount = it },
-                label = { Text("Summa") },
+                label = { Text(stringResource(R.string.loan_amount_label)) },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
-                suffix = { Text("so'm") }
+                suffix = { Text(stringResource(R.string.currency_som)) }
             )
 
             Spacer(modifier = Modifier.height(20.dp))
 
             Text(
-                text = "Muddati: $termMonths oy",
+                text = stringResource(R.string.loan_term_label, termMonths),
                 modifier = Modifier.fillMaxWidth(),
                 fontWeight = FontWeight.Medium
             )
@@ -117,7 +119,7 @@ fun ApplyLoanScreen(
 
             if (cards.isNotEmpty()) {
                 Text(
-                    text = "Qabul qiluvchi karta",
+                    text = stringResource(R.string.loan_receiver_card),
                     modifier = Modifier.fillMaxWidth(),
                     fontWeight = FontWeight.Medium,
                     fontSize = 14.sp
@@ -171,7 +173,7 @@ fun ApplyLoanScreen(
                 if (loanState.isLoading) {
                     CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
                 } else {
-                    Text("Tasdiqlash", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                    Text(stringResource(R.string.loan_apply_button), fontWeight = FontWeight.Bold, fontSize = 16.sp)
                 }
             }
         }

@@ -23,9 +23,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -43,6 +47,8 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
@@ -85,6 +91,7 @@ data class CardData(
     val cardNumber: String,
     val cardHolderName: String,
     val balance: String,
+    val balanceValue: Double,
     val currency: String,
     val cardType: String,
     val cardTypeLogo: ImageVector = Icons.Default.Info,
@@ -95,7 +102,7 @@ data class CardData(
 data class AddCardOption(
     val title: String,
     val subtitle: String,
-    val icon: ImageVector = Icons.Default.Info
+    val icon: ImageVector
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -126,37 +133,16 @@ fun CardsScreen(
     }
 
     if (showAttachDialog) {
-        AlertDialog(
+        AddCardDialog(
+            cardNumber = cardNumber,
+            onCardNumberChange = { cardNumber = it },
             onDismissRequest = { showAttachDialog = false },
-            title = { Text("Karta qo'shish") },
-            text = {
-                OutlinedTextField(
-                    value = cardNumber,
-                    onValueChange = { if (it.length <= 16) cardNumber = it },
-                    label = { Text("Karta raqami") },
-                    placeholder = { Text("8600...") },
-                    modifier = Modifier.fillMaxWidth(),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    singleLine = true
-                )
+            onConfirmClick = {
+                viewModel.attachCard(cardNumber)
+                showAttachDialog = false
+                cardNumber = ""
             },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        viewModel.attachCard(cardNumber)
-                        showAttachDialog = false
-                        cardNumber = ""
-                    },
-                    enabled = cardNumber.length == 16 && !isLoading
-                ) {
-                    Text("Qo'shish")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showAttachDialog = false }) {
-                    Text("Bekor qilish")
-                }
-            }
+            isLoading = isLoading
         )
     }
 
@@ -167,6 +153,7 @@ fun CardsScreen(
             isPrimary = apiCard.isMain,
             cardNumber = apiCard.maskedNumber,
             cardHolderName = apiCard.holderName,
+            balanceValue = apiCard.balance,
             balance = String.format(Locale.getDefault(), "%,d", apiCard.balance.toLong()).replace(',', ' '),
             currency = apiCard.currency,
             cardType = apiCard.type,
@@ -178,7 +165,21 @@ fun CardsScreen(
         )
     }
 
-    val filters = listOf("Barchasi", "Visa", "Uzcard", "Humo")
+    var sortOption by remember { mutableStateOf("Default") }
+    var showSortMenu by remember { mutableStateOf(false) }
+
+    val sortedCards = remember(cards, sortOption) {
+        when (sortOption) {
+            "BalanceAsc" -> cards.sortedBy { it.balanceValue }
+            "BalanceDesc" -> cards.sortedByDescending { it.balanceValue }
+            "Name" -> cards.sortedBy { it.cardHolderName }
+            else -> cards
+        }
+    }
+
+    val filters = listOf("Barchasi"
+//        , "Visa", "Uzcard", "Humo"
+    )
     var selectedFilter by remember { mutableStateOf("Barchasi") }
 
     Scaffold(
@@ -194,6 +195,46 @@ fun CardsScreen(
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = "Back")
+                    }
+                },
+                actions = {
+                    Box {
+                        IconButton(onClick = { showSortMenu = true }) {
+                            Icon(Icons.Default.MoreVert, contentDescription = "Sort")
+                        }
+                        DropdownMenu(
+                            expanded = showSortMenu,
+                            onDismissRequest = { showSortMenu = false }
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text("Asl holati") },
+                                onClick = {
+                                    sortOption = "Default"
+                                    showSortMenu = false
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = { Text("Balans (O'sish)") },
+                                onClick = {
+                                    sortOption = "BalanceAsc"
+                                    showSortMenu = false
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = { Text("Balans (Kamayish)") },
+                                onClick = {
+                                    sortOption = "BalanceDesc"
+                                    showSortMenu = false
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = { Text("Nomi bo'yicha") },
+                                onClick = {
+                                    sortOption = "Name"
+                                    showSortMenu = false
+                                }
+                            )
+                        }
                     }
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
@@ -241,7 +282,7 @@ fun CardsScreen(
                         }
                     }
                 }
-                items(cards) { card ->
+                items(sortedCards) { card ->
                     BankCardItem(card)
                 }
             }
@@ -419,9 +460,9 @@ fun BankCardItem(card: CardData) {
 @Composable
 fun AddCardContent(onClose: () -> Unit, onAttachClick: () -> Unit) {
     val options = listOf(
-        AddCardOption("Yangi karta", "Yangi karta qo'shish"),
-        AddCardOption("Barcha Aloqabank kartalari", "Hammasini bir martada yuklang"),
-        AddCardOption("Virtual karta", "Virtual karta ochish")
+        AddCardOption("Yangi karta", "Yangi karta qo'shish",Icons.Default.Add),
+        AddCardOption("Barcha Aloqabank kartalari", "Hammasini bir martada yuklang",Icons.Default.CheckCircle),
+        AddCardOption("Virtual karta", "Virtual karta ochish", Icons.Default.Search)
     )
 
     Column(
@@ -519,6 +560,7 @@ fun BankCardItemPreview() {
                 cardNumber = "8600 **** **** 1234",
                 cardHolderName = "JOHN DOE",
                 balance = "1 000 000",
+                balanceValue = 1000000.0,
                 currency = "UZS",
                 cardType = "UZCARD",
                 backgroundUrl = "https://example.com/card_bg.png"
@@ -536,11 +578,11 @@ fun CardsScreenPreview() {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun LightCardsScreenPreview() {
-    val navController = rememberNavController()
-    ZoomradTheme(darkTheme = false) {
-        CardsScreen(navController)
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun LightCardsScreenPreview() {
+//    val navController = rememberNavController()
+//    ZoomradTheme(darkTheme = false) {
+//        CardsScreen(navController)
+//    }
+//}

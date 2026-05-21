@@ -52,6 +52,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.zoomrad.ui.theme.ZoomradTheme
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 import java.util.Locale
 import com.example.zoomrad.presentation.screens.cards.CardData as CardUiData
@@ -155,7 +156,12 @@ fun CardSelectionBottomSheet(
                                 isPrimary = card.isMain,
                                 cardNumber = card.maskedNumber,
                                 cardHolderName = card.holderName,
-                                balance = String.format(Locale.getDefault(), "%,d", card.balance.toLong()).replace(',', ' '),
+                                balance = String.format(
+                                    Locale.getDefault(),
+                                    "%,d",
+                                    card.balance.toLong()
+                                ).replace(',', ' '),
+                                balanceValue = card.balance,
                                 currency = card.currency,
                                 cardType = card.type,
                                 backgroundUrl = card.backgroundUrl,

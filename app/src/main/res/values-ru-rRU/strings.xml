@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Home Screen -->
+    <string name="main_user">ПОЛЬЗОВАТЕЛЬ ZOOMRAD</string>
+    <string name="verified_customer">Подтвержденный клиент</string>
+    <string name="no_card_linked">Карта не привязана</string>
+    <string name="total_points">%s баллов</string>
+    <string name="cashback_balance">Баланс кешбэка ></string>
+    <string name="deposit">Вклад</string>
+    <string name="loan">Кредит</string>
+    <string name="payments">Платежи</string>
+    <string name="services">Услуги</string>
+    <string name="see_all">Все</string>
+    <string name="turn_on_geolocation">Включите геолокацию</string>
+    <string name="geolocation_needed">Это необходимо для работы сервиса</string>
+    <string name="turn_on">Включить</string>
+    <string name="currency_rates">Курс валют</string>
+    <string name="currency">Валюта</string>
+    <string name="buy">Покупка</string>
+    <string name="sell">Продажа</string>
+    <string name="no_data">Данные отсутствуют</string>
+    <string name="last_update">Последнее обновление: </string>
+    <string name="logout">Выход</string>
+    <string name="app_version">Версия %s</string>
+    <string name="cash_back">Кешбек балли</string>
+
+
+    <!-- Drawer Menu -->
+    <string name="menu_profile">Профиль</string>
+    <string name="menu_id">Идентификация</string>
+    <string name="menu_settings">Настройки</string>
+    <string name="menu_security">Безопасность</string>
+    <string name="menu_applications">Мои заявки</string>
+    <string name="menu_help">Помощь</string>
+    <string name="menu_share">Поделиться приложением</string>
+    <string name="menu_about">О приложении</string>
+</resources>

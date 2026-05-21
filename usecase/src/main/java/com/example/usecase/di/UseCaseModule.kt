@@ -17,6 +17,7 @@ import com.example.usecase.InitiateTransferUseCase
 import com.example.usecase.MakePaymentUseCase
 import com.example.usecase.RefreshTokenUseCase
 import com.example.usecase.RepayLoanUseCase
+import com.example.usecase.SetMainCardUseCase
 import com.example.usecase.SendOtpUseCase
 import com.example.usecase.SetPinUseCase
 import com.example.usecase.UpdateProfileUseCase
@@ -30,6 +31,7 @@ import com.example.usecase.impl.loan.GetLoansUseCaseImpl
 import com.example.usecase.impl.loan.RepayLoanUseCaseImpl
 import com.example.usecase.impl.cards.AttachCardUseCaseImpl
 import com.example.usecase.impl.cards.GetCardsUseCaseImpl
+import com.example.usecase.impl.cards.SetMainCardUseCaseImpl
 import com.example.usecase.impl.chucker.ClearLogsUseCaseImpl
 import com.example.usecase.impl.chucker.GetAllLogsUseCaseImpl
 import com.example.usecase.impl.payment.GetProvidersUseCaseImpl
@@ -55,6 +57,9 @@ internal interface UseCaseModule {
 
     @Binds
     fun bindAttachCardUseCase(impl: AttachCardUseCaseImpl): AttachCardUseCase
+
+    @Binds
+    fun bindSetMainCardUseCase(impl: SetMainCardUseCaseImpl): SetMainCardUseCase
 
     @Binds
     fun bindGetTransactionsUseCase(impl: GetTransactionsUseCaseImpl): GetTransactionsUseCase
@@ -127,5 +132,20 @@ internal interface UseCaseModule {
     fun bindRepayLoanUseCase(
         impl: RepayLoanUseCaseImpl
     ): RepayLoanUseCase
+
+    @Binds
+    fun bindGetExchangeRatesUseCase(
+        impl: com.example.usecase.impl.exchange.GetExchangeRatesUseCaseImpl
+    ): com.example.usecase.GetExchangeRatesUseCase
+
+    @Binds
+    fun bindGetKycStatusUseCase(
+        impl: com.example.usecase.impl.kyc.GetKycStatusUseCaseImpl
+    ): com.example.usecase.GetKycStatusUseCase
+
+    @Binds
+    fun bindSubmitKycUseCase(
+        impl: com.example.usecase.impl.kyc.SubmitKycUseCaseImpl
+    ): com.example.usecase.SubmitKycUseCase
 }
 
